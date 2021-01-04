@@ -1,3 +1,6 @@
 **/__pycache__/
 **/migrations/
+
+nimbusBackend/.vscode/
+nimbusBackend/db.sqlite3/
 venv/
