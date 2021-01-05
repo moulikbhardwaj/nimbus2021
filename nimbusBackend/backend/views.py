@@ -1,9 +1,10 @@
 from django.http.response import Http404
 from .models import Department, User, Quiz, Question
-from django.contrib.auth.hashers import check_password
 from rest_framework.response import Response
 from rest_framework.request import Request
-
+from .helper_functions import checkValidPassWord, departmentExistsOrNot
+from .helper_response import InvalidPasswordResponse, ProvidePasswordResponse, InternalServerErrorResponse, \
+    SuccessfullyUpdatedResponse, DepartMentNotFoundErrorResponse
 from rest_framework.generics import GenericAPIView, get_object_or_404
 
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, UpdateModelMixin, \
@@ -116,19 +117,19 @@ class DepartmentView(GenericAPIView, UpdateModelMixin, RetrieveModelMixin):
             department = get_object_or_404(Department, pk=kwargs["pk"])
             if department:
                 try:
-                    if check_password(request.data["password"], department.password):
+                    if checkValidPassWord(request.data["password"], department):
                         department.image = request.data['image']
                         department.save()
-                        return Response({"Message": "Successfully Updated"}, HTTP_200_OK)
+                        return SuccessfullyUpdatedResponse
                     else:
-                        return Response({"Message": "Invalid Password"}, HTTP_400_BAD_REQUEST)
+                        return InvalidPasswordResponse
                 except:
-                    return Response({"Message": "Please provide Password"}, HTTP_400_BAD_REQUEST)
+                    # Exception will be raised when password will not be present in body
+                    return ProvidePasswordResponse
             else:
-                return Response({"error": "Invalid department name. Does not exist"}, HTTP_404_NOT_FOUND)
-        except Exception as e:
-            print(e)
-            return Response({"error": "internal server error"}, HTTP_500_INTERNAL_SERVER_ERROR)
+                return DepartMentNotFoundErrorResponse
+        except:
+            return InternalServerErrorResponse
 
     def partial_update(self, request, *args, **kwargs):
         """
@@ -138,23 +139,22 @@ class DepartmentView(GenericAPIView, UpdateModelMixin, RetrieveModelMixin):
             department = get_object_or_404(Department, pk=kwargs["pk"])
             if department:
                 try:
-                    if check_password(request.data["password"], department.password):
+                    if checkValidPassWord(request.data["password"], department):
                         keys = list(request.data.keys())
                         if "image" in request.data.keys():
                             department.image = request.data["image"]
                         department.save()
                         print(department.name)
-                        return Response({"Message": "Successfully Updated"}, HTTP_200_OK)
+                        return SuccessfullyUpdatedResponse
                     else:
-                        return Response({"Message": "Invalid Password"}, HTTP_400_BAD_REQUEST)
-                except Exception as e:
-                    print(e)
-                    return Response({"Message": "Please provide Password"}, HTTP_400_BAD_REQUEST)
+                        return InvalidPasswordResponse
+                except:
+                    # Exception will be raised when password will not be present in body
+                    return ProvidePasswordResponse
             else:
-                return Response({"error": "Invalid department name. Does not exist"}, HTTP_404_NOT_FOUND)
-        except Exception as e:
-            print(e)
-            return Response({"error": "internal server error"}, HTTP_500_INTERNAL_SERVER_ERROR)
+                return DepartMentNotFoundErrorResponse
+        except:
+            return InternalServerErrorResponse
 
     def get(self, request: Request, *args, **kwargs):
         """
