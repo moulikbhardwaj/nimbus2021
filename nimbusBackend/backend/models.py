@@ -100,20 +100,20 @@ class Event(Model):
     """
     Event
     """
-    choices = (
-        (0, "DepartmentEvent"),
-        (1, "InstituteEvent"),
-        (2, "Talk"),
-        (3, "Exhibition"),
-        (4, "Workshop")
-    )
+    # choices = (
+    #     (0, "DepartmentEvent"),
+    #     (1, "InstituteEvent"),
+    #     (2, "Talk"),
+    #     (3, "Exhibition"),
+    #     (4, "Workshop")¸
+    # )
     name = CharField('EventName', max_length=256)
     info = CharField('info', max_length=256)
     platform = CharField('platform', max_length=256)
     date = DateTimeField('date')
     image = URLField('imageUrl', max_length=256)
     abstract = TextField('abstract', max_length=1000)
-    type = IntegerField('type', max_length=256, choices=choices)
+    type = IntegerField('type')
 
     def __str__(self):
         return self.name

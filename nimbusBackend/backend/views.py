@@ -1,15 +1,16 @@
-from django.db.models import query
 from django.http.response import Http404
 from .models import Department, User, Quiz, Question
-
+from django.contrib.auth.hashers import check_password
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, get_object_or_404
 
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, UpdateModelMixin
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, UpdateModelMixin, \
+    RetrieveModelMixin
 
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, \
+    HTTP_404_NOT_FOUND
 
 from .serializers import DepartmentSerializer, UserSerializer, QuizSerializer, QuestionSerializer
 
@@ -77,7 +78,7 @@ class UserView(GenericAPIView, UpdateModelMixin, DestroyModelMixin):
         return self.destroy(request, *args, **kwargs)
 
 
-class DepartmentsView(GenericAPIView, ListModelMixin, CreateModelMixin):
+class DepartmentsView(GenericAPIView, ListModelMixin, CreateModelMixin, UpdateModelMixin):
     serializer_class = DepartmentSerializer
 
     queryset = Department.objects.all()
@@ -95,8 +96,9 @@ class DepartmentsView(GenericAPIView, ListModelMixin, CreateModelMixin):
         return self.create(request)
 
 
-class DepartmentView(GenericAPIView, ListModelMixin, UpdateModelMixin):
+class DepartmentView(GenericAPIView, UpdateModelMixin, RetrieveModelMixin):
     serializer_class = DepartmentSerializer
+    queryset = Department.objects.all()
 
     def get_queryset(self, pk=None):
         try:
@@ -106,13 +108,70 @@ class DepartmentView(GenericAPIView, ListModelMixin, UpdateModelMixin):
         except Department.DoesNotExist:
             return Http404
 
+    def update(self, request, *args, **kwargs):
+        """
+        Customising update method
+        """
+        try:
+            department = get_object_or_404(Department, pk=kwargs["pk"])
+            if department:
+                try:
+                    if check_password(request.data["password"], department.password):
+                        department.image = request.data['image']
+                        department.save()
+                        return Response({"Message": "Successfully Updated"}, HTTP_200_OK)
+                    else:
+                        return Response({"Message": "Invalid Password"}, HTTP_400_BAD_REQUEST)
+                except:
+                    return Response({"Message": "Please provide Password"}, HTTP_400_BAD_REQUEST)
+            else:
+                return Response({"error": "Invalid department name. Does not exist"}, HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return Response({"error": "internal server error"}, HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Customising partial update method
+        """
+        try:
+            department = get_object_or_404(Department, pk=kwargs["pk"])
+            if department:
+                try:
+                    if check_password(request.data["password"], department.password):
+                        keys = list(request.data.keys())
+                        if "image" in request.data.keys():
+                            department.image = request.data["image"]
+                        department.save()
+                        print(department.name)
+                        return Response({"Message": "Successfully Updated"}, HTTP_200_OK)
+                    else:
+                        return Response({"Message": "Invalid Password"}, HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    print(e)
+                    return Response({"Message": "Please provide Password"}, HTTP_400_BAD_REQUEST)
+            else:
+                return Response({"error": "Invalid department name. Does not exist"}, HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return Response({"error": "internal server error"}, HTTP_500_INTERNAL_SERVER_ERROR)
+
     def get(self, request: Request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        """
+        Retrieve department
+        """
+        return self.retrieve(request, *args, **kwargs)
 
     def put(self, request: Request, *args, **kwargs):
-        return self.put(request, *args, **kwargs)
+        """
+        Update Department completely
+        """
+        return self.update(request, *args, **kwargs)
 
     def patch(self, request: Request, *args, **kwargs):
+        """
+        Update Department partially
+        """
         return self.partial_update(request, *args, **kwargs)
 
 
