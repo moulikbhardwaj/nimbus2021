@@ -43,6 +43,9 @@ INSTALLED_APPS = [
 
     # My apps
     'backend',
+    
+    # Documentation
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
