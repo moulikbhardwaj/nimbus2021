@@ -1,10 +1,8 @@
 from django.http.response import Http404
+from .authentication import DepartmentAuthentication
 from .models import Department, User, Quiz, Question
 from rest_framework.response import Response
 from rest_framework.request import Request
-from .helper_functions import checkValidPassWord, departmentExistsOrNot
-from .helper_response import InvalidPasswordResponse, ProvidePasswordResponse, InternalServerErrorResponse, \
-    SuccessfullyUpdatedResponse, DepartMentNotFoundErrorResponse
 from rest_framework.generics import GenericAPIView, get_object_or_404
 
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, UpdateModelMixin, \
@@ -113,48 +111,27 @@ class DepartmentView(GenericAPIView, UpdateModelMixin, RetrieveModelMixin):
         """
         Customising update method
         """
-        try:
+
+        def updateDepartment():
             department = get_object_or_404(Department, pk=kwargs["pk"])
-            if department:
-                try:
-                    if checkValidPassWord(request.data["password"], department):
-                        department.image = request.data['image']
-                        department.save()
-                        return SuccessfullyUpdatedResponse
-                    else:
-                        return InvalidPasswordResponse
-                except:
-                    # Exception will be raised when password will not be present in body
-                    return ProvidePasswordResponse
-            else:
-                return DepartMentNotFoundErrorResponse
-        except:
-            return InternalServerErrorResponse
+            department.image = request.data['image']
+            department.save()
+
+        return DepartmentAuthentication(request=request, update=updateDepartment, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         """
         Customising partial update method
         """
-        try:
+
+        def updateDepartment():
             department = get_object_or_404(Department, pk=kwargs["pk"])
-            if department:
-                try:
-                    if checkValidPassWord(request.data["password"], department):
-                        keys = list(request.data.keys())
-                        if "image" in request.data.keys():
-                            department.image = request.data["image"]
-                        department.save()
-                        print(department.name)
-                        return SuccessfullyUpdatedResponse
-                    else:
-                        return InvalidPasswordResponse
-                except:
-                    # Exception will be raised when password will not be present in body
-                    return ProvidePasswordResponse
-            else:
-                return DepartMentNotFoundErrorResponse
-        except:
-            return InternalServerErrorResponse
+            keys = list(request.data.keys())
+            if "image" in request.data.keys():
+                department.image = request.data["image"]
+            department.save()
+
+        return DepartmentAuthentication(request=request, update=updateDepartment, *args, **kwargs)
 
     def get(self, request: Request, *args, **kwargs):
         """

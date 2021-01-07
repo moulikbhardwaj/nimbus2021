@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 InvalidPasswordResponse = Response({"Message": "Invalid Password"}, HTTP_400_BAD_REQUEST)
 
-ProvidePasswordResponse = Response({"Message": "Please provide Password"}, HTTP_400_BAD_REQUEST)
+FieldsNotPresentErrorResponse = Response({"Message": "Please provide the Required Fields. Password is neccessary"}, HTTP_400_BAD_REQUEST)
 
 InternalServerErrorResponse = Response({"Message": "internal server error"}, HTTP_500_INTERNAL_SERVER_ERROR)
 
