@@ -2,5 +2,6 @@
 **/migrations/
 
 nimbusBackend/.vscode/
-nimbusBackend/db.sqlite3/
+nimbusBackend/db.sqlite3
 venv/
+.env
