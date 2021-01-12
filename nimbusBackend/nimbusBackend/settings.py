@@ -42,7 +42,13 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # My apps
-    'backend',
+    # 'backend',			Depriciated
+	'users',
+	'departments',
+	'quiz',
+	'schedule',
+	'events',
+	'members',
     
     # Documentation
     'drf_yasg',
