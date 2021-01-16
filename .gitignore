@@ -3,5 +3,6 @@
 
 nimbusBackend/.vscode/
 nimbusBackend/db.sqlite3
+nimbusBackend/media/
 venv/
 .env
