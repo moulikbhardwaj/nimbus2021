@@ -14,7 +14,6 @@ class DepartmentSerializer(ModelSerializer):
                                      'style': {'input_type': 'password', 'placeholder': 'Password', 'required': False}}}
 
     def create(self, validated_data):
-        print(validated_data)
         validated_data['password'] = make_password(validated_data['password'])
         department = Department(
             name=validated_data['name'],
