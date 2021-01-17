@@ -9,13 +9,13 @@ from departments.models import Department
 
 class Event(Model):
     name = CharField("name", max_length=255, null=False)
-    abstract = FileField("abstract",upload_to="events/abstract/")
-    info = CharField("info", max_length=512)
-    venue = CharField("venue", max_length=64)
+    abstract = FileField("abstract",upload_to="events/abstract/", blank=True)
+    info = CharField("info", max_length=512, blank=True)
+    venue = CharField("venue", max_length=64, blank=True)
     start = DateTimeField("start")
-    end = DateTimeField("end")
-    image = ImageField("image", upload_to="events/images")
-    regURL = URLField("regURL")
+    end = DateTimeField("end", blank=True)
+    image = ImageField("image", upload_to="events/images", blank=True)
+    regURL = URLField("regURL", blank=True)
 
     DEPARTMENT_EVENT = 0
     INSTITUTE_EVENT = 1
