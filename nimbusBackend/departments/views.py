@@ -32,7 +32,6 @@ class DepartmentsView(GenericAPIView, ListModelMixin, CreateModelMixin, UpdateMo
         """
         Creates a department, if not exists
         """
-        print(request.data)
         return self.create(request)
 
 
