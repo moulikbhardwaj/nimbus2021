@@ -26,7 +26,7 @@ SECRET_KEY = '7#&u8y^f*8zygim2qj!=f_^llvc83n4@2=%%l=c&!+)-2@$ih0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["13.71.16.202"]
 
 
 # Application definition
@@ -139,7 +139,7 @@ MEDIA_URL = '/media/'
 
 if DEBUG==True:
     MEDIA_ROOT = Path.joinpath(BASE_DIR,'media')
-
+    STATIC_ROOT = Path.joinpath(BASE_DIR,'static')
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=1)

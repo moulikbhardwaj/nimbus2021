@@ -4,5 +4,10 @@
 nimbusBackend/.vscode/
 nimbusBackend/db.sqlite3
 nimbusBackend/media/
+nimbusBackend/static/
 venv/
 .env
+logs
+uwsgi.ini
+reload
+
