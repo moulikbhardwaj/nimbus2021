@@ -18,18 +18,20 @@ class EventsView(GenericAPIView, ListModelMixin, CreateModelMixin):
     serializer_class = EventSerializer
 
     def get_queryset(self):
+        queryset = Event.objects.all()
         if self.request.query_params.get('type')=='departmental':
-            queryset = Event.objects.filter(Type=0)
+            queryset = queryset.filter(Type=0)
         elif self.request.query_params.get('type')=='institutional':
-            queryset = Event.objects.filter(Type=1)
+            queryset = queryset.filter(Type=1)
         elif self.request.query_params.get('type')=='talk':
-            queryset = Event.objects.filter(Type=2)
+            queryset = queryset.filter(Type=2)
         elif self.request.query_params.get('type')=='exhibition':
-            queryset = Event.objects.filter(Type=3)
+            queryset = queryset.filter(Type=3)
         elif self.request.query_params.get('type')=='workshop':
-            queryset = Event.objects.filter(Type=4)
-        else:
-            queryset = Event.objects.all()
+            queryset = queryset.filter(Type=4)
+        
+        if self.request.query_params.get('department', None) != None:
+            queryset = queryset.filter(department__name = self.request.query_params.get("department"))
         return queryset
             
 

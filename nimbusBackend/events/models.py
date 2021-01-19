@@ -9,13 +9,13 @@ from departments.models import Department
 
 class Event(Model):
     name = CharField("name", max_length=255, null=False)
-    abstract = FileField("abstract",upload_to="events/abstract/", blank=True)
-    info = CharField("info", max_length=512, blank=True)
-    venue = CharField("venue", max_length=64, blank=True)
-    start = DateTimeField("start")
-    end = DateTimeField("end", blank=True)
+    abstract = FileField("abstract",upload_to="events/abstract/", blank=True, null=True)
+    info = CharField("info", max_length=512, blank=True, null=True)
+    venue = CharField("venue", max_length=64, blank=True, null=True)
+    start = DateTimeField("start", null=False)
+    end = DateTimeField("end", blank=True, null=True)
     image = ImageField("image", upload_to="events/images", blank=True)
-    regURL = URLField("regURL", blank=True)
+    regURL = URLField("regURL", blank=True, null=True)
 
     DEPARTMENT_EVENT = 0
     INSTITUTE_EVENT = 1
@@ -34,3 +34,18 @@ class Event(Model):
     Type = IntegerField("type", choices=choices)
 
     department = ForeignKey(Department, on_delete=CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.department.name}: {self.name}"
+    
+    def __repr__(self) -> str:
+        if self.Type == 0:
+            return f"<Department_Event: {self.__str__()}>"
+        if self.Type == 1:
+            return f"<Institution_Event: {self.__str__()}>"
+        if self.Type == 2:
+            return f"<Talk: {self.__str__()}>"
+        if self.Type == 3:
+            return f"<Exhibition: {self.__str__()}>"
+        if self.Type == 0:
+            return f"<Workshop: {self.__str__()}>"
