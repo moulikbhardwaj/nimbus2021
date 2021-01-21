@@ -1,20 +1,37 @@
 import logging
 from django.http.response import Http404
+from rest_framework.decorators import api_view
 from users.models import User
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.generics import GenericAPIView
 
-from rest_framework.mixins import DestroyModelMixin , UpdateModelMixin
+from rest_framework.mixins import DestroyModelMixin, UpdateModelMixin
 
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, \
+    HTTP_404_NOT_FOUND
 
 from users.serializers import UserSerializer
 
 # Logger
 logger = logging.getLogger(__name__)
 
+
 # Create your views here.
+
+@api_view(["GET"])
+def userPresentOrNot(request, email):
+    """
+    Check whether a user is present or not
+    Based on User Email Id
+    """
+
+    try:
+        user = User.objects.get(email=email)
+        return Response({"user_present": True})
+    except User.DoesNotExist:
+        return Response({"user_present": False}, HTTP_404_NOT_FOUND)
+
 
 class UsersView(GenericAPIView):
     serializer_class = UserSerializer
