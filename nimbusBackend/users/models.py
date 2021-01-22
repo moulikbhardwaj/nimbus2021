@@ -1,5 +1,5 @@
 from django.db.models import Model, CASCADE
-from django.db.models.fields import CharField, EmailField
+from django.db.models.fields import CharField, EmailField, IntegerField, BooleanField
 
 # Create your models here.
 
@@ -19,6 +19,10 @@ class User(Model):
 
     firstName = CharField('firstName', max_length=255, null=False, blank=False)
     lastName = CharField('lastName', max_length=255, blank=True, null=True)
+
+    # Details related to Omegle Clone feature
+    omegleReports = IntegerField('omegleReports', default=0)
+    omegleAllowed = BooleanField('omegleAllowed', default=True)
 
     def __str__(self) -> str:
         return self.username
