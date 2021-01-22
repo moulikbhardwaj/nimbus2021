@@ -1,12 +1,12 @@
 from django.http.response import Http404
-from quiz.models import Quiz
+from quiz.models import Quiz, ScoreBoard
 from rest_framework.request import Request
 from rest_framework.generics import GenericAPIView
 
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin
 
+from quiz.serializers import QuizSerializer, ScoreBoardSerializer
 
-from quiz.serializers import QuizSerializer
 
 # Create your views here.
 class QuizzesView(GenericAPIView, ListModelMixin, CreateModelMixin):
@@ -46,3 +46,12 @@ class QuizView(GenericAPIView, ListModelMixin, UpdateModelMixin):
 
     def patch(self, request: Request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+
+
+class LeaderBoard(GenericAPIView, ListModelMixin):
+    model = ScoreBoard
+    serializer_class = ScoreBoardSerializer
+    queryset = ScoreBoard.objects.all().order_by('-score')
+
+    def get(self, request: Request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
