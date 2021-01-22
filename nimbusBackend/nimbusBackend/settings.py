@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 	'schedule',
 	'events',
 	'members',
+    'omegleClone',
     
     # Documentation
     'drf_yasg',

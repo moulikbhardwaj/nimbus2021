@@ -39,5 +39,6 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('departments/', include('departments.urls')),
     path('quiz/', include('quiz.urls')),
+    path('omegle_clone/', include('omegleClone.urls')),
     path('admin/', admin.site.urls),
 ]
