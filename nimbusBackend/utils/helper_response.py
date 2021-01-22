@@ -11,3 +11,4 @@ SuccessfullyUpdatedResponse = Response({"Message": "Successfully Updated"}, HTTP
 
 DepartMentNotFoundErrorResponse = Response({"error": "Department not found. Please provide correct Department Name"},
                                            HTTP_404_NOT_FOUND)
+InvalidQuizIdResponse = Response({"message": "Invalid QuizId"}, HTTP_400_BAD_REQUEST)

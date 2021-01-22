@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import django
 from django.db.models import Model, CASCADE
 from django.db.models.fields import CharField, IntegerField, DateTimeField, PositiveIntegerField
@@ -13,6 +15,7 @@ class Quiz(Model):
     """
     Quiz
     """
+    id = CharField(primary_key=True, default=uuid4(), max_length=256)
     name = CharField('name', max_length=255, null=False)
 
     count = IntegerField('count', default=0)
@@ -58,3 +61,18 @@ class ScoreBoard(Model):
 
     def __str__(self):
         return self.user.email
+
+
+class QuizScoreBoard(Model):
+    """
+    Contain quiz LeaderBoard
+    """
+    user = ForeignKey(User, on_delete=CASCADE)
+    quiz = ForeignKey(Quiz, on_delete=CASCADE)
+    score = PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ("user", "quiz")
+
+    def __str__(self):
+        return self.user.email + " " + self.quiz.name

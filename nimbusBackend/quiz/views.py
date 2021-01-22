@@ -5,10 +5,17 @@ from rest_framework.generics import GenericAPIView
 
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin
 
-from quiz.serializers import QuizSerializer, ScoreBoardSerializer
-
+from quiz.serializers import QuizSerializer, ScoreBoardSerializer, QuizScoreBoardSerializer
+from rest_framework.status import HTTP_400_BAD_REQUEST
 
 # Create your views here.
+from rest_framework.response import Response
+
+from quiz.models import QuizScoreBoard
+
+from utils.helper_response import InternalServerErrorResponse, InvalidQuizIdResponse
+
+
 class QuizzesView(GenericAPIView, ListModelMixin, CreateModelMixin):
     serializer_class = QuizSerializer
 
@@ -49,9 +56,31 @@ class QuizView(GenericAPIView, ListModelMixin, UpdateModelMixin):
 
 
 class LeaderBoard(GenericAPIView, ListModelMixin):
+    """
+    Retrieve OverAll LeaderBoard
+    """
     model = ScoreBoard
     serializer_class = ScoreBoardSerializer
     queryset = ScoreBoard.objects.all().order_by('-score')
 
     def get(self, request: Request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+
+class QuizLeaderBoard(GenericAPIView, ListModelMixin):
+    """
+    Retrieve LeaderBoard Quiz Wise
+    """
+    model = QuizScoreBoard
+    serializer_class = QuizScoreBoardSerializer
+    queryset = QuizScoreBoard.objects.all()
+
+    def get(self, request: Request, *args, **kwargs):
+        try:
+            if len(Quiz.objects.all().filter(id=kwargs["pk"])) == 0:
+                return InvalidQuizIdResponse
+            quizScoreBoardSerializer = QuizScoreBoardSerializer(
+                QuizScoreBoard.objects.all().filter(quiz_id=kwargs["pk"]), many=True)
+            return Response(quizScoreBoardSerializer.data)
+        except:
+            return InternalServerErrorResponse

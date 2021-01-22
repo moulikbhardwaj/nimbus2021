@@ -7,8 +7,8 @@ from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin, \
     RetrieveModelMixin
 
-
 from departments.serializers import DepartmentSerializer
+
 
 class DepartmentsView(GenericAPIView, ListModelMixin, CreateModelMixin, UpdateModelMixin):
     serializer_class = DepartmentSerializer
