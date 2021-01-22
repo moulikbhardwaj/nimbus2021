@@ -43,6 +43,7 @@ urlpatterns = [
     path('departments/', include('departments.urls')),
     path('quiz/', include('quiz.urls')),
     path('events/', include('events.urls')),
+    path('members/', include('members.urls')),
     path('admin/', admin.site.urls),
 ]
 
