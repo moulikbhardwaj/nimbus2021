@@ -45,12 +45,12 @@ INSTALLED_APPS = [
 
     # My apps
     # 'backend',			Depriciated
-	'users',
-	'departments',
-	'quiz',
-	'schedule',
-	'events',
-	'members',
+    'users',
+    'departments',
+    'quiz',
+    'schedule',
+    'events',
+    'members',
     'omegleClone',
     
     # Documentation
