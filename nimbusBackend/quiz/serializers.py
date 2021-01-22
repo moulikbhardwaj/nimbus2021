@@ -1,6 +1,8 @@
-from quiz.models import Quiz, Question
+from quiz.models import Quiz, Question, ScoreBoard
 from rest_framework.serializers import ModelSerializer
 from rest_framework.validators import UniqueTogetherValidator
+
+from users.serializers import UserSerializerForScoreBoard
 
 
 class QuizSerializer(ModelSerializer):
@@ -26,3 +28,11 @@ class QuestionSerializer(ModelSerializer):
                 fields=['quiz', 'name']
             )
         ]
+
+
+class ScoreBoardSerializer(ModelSerializer):
+    user = UserSerializerForScoreBoard()
+
+    class Meta:
+        model = ScoreBoard
+        fields = "__all__"
