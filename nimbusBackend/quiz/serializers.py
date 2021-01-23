@@ -1,5 +1,5 @@
-from quiz.models import Quiz, Question, ScoreBoard, QuizScoreBoard
-from rest_framework.serializers import ModelSerializer
+from quiz.models import Quiz, Question, ScoreBoard, QuizScoreBoard, Answer
+from rest_framework.serializers import ModelSerializer, CharField, IntegerField
 from rest_framework.validators import UniqueTogetherValidator
 
 from users.serializers import UserSerializerForScoreBoard
@@ -18,14 +18,45 @@ class QuizSerializer(ModelSerializer):
 
 
 class QuestionSerializer(ModelSerializer):
+    text = CharField(help_text="Question Text", max_length=256, min_length=5)
+    option1 = CharField(help_text="Option 1", max_length=256, min_length=1)
+    option2 = CharField(help_text="Option 2", max_length=256, min_length=1)
+    option3 = CharField(help_text="Option 3", max_length=256, min_length=1)
+    option4 = CharField(help_text="Option 4", max_length=256, min_length=1)
+    correct = IntegerField(help_text="Enter Correct Option: 1 - 4", min_value=1, max_value=4)
+
     class Meta:
         model = Question
-        fields = '__all__'
-        extra_fields = ['quiz_name']
+        exclude = ['quiz']
         validators = [
             UniqueTogetherValidator(
                 queryset=Question.objects.all(),
-                fields=['quiz', 'name']
+                fields=['text']
+            )
+        ]
+
+
+class AnswerSerializer(ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = "__all__"
+
+
+class QuestionSerializerFull(ModelSerializer):
+    quiz = QuizSerializer()
+    option1 = AnswerSerializer()
+    option2 = AnswerSerializer()
+    option3 = AnswerSerializer()
+    option4 = AnswerSerializer()
+    correct = AnswerSerializer()
+
+    class Meta:
+        model = Question
+        fields = "__all__"
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Question.objects.all(),
+                fields=['text']
             )
         ]
 

@@ -1,5 +1,5 @@
 from django.http.response import Http404
-from departments.authentication import DepartmentAuthentication
+from rest_framework import permissions
 from departments.models import Department
 from rest_framework.request import Request
 from rest_framework.generics import GenericAPIView, get_object_or_404
@@ -7,13 +7,17 @@ from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin, \
     RetrieveModelMixin
 
+from departments.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from departments.serializers import DepartmentSerializer
 
 
 class DepartmentsView(GenericAPIView, ListModelMixin, CreateModelMixin, UpdateModelMixin):
     serializer_class = DepartmentSerializer
-
     queryset = Department.objects.all()
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request: Request):
         """
@@ -32,39 +36,8 @@ class DepartmentView(GenericAPIView, UpdateModelMixin, RetrieveModelMixin):
     serializer_class = DepartmentSerializer
     queryset = Department.objects.all()
 
-    def get_queryset(self, pk=None):
-        try:
-            if pk is None:
-                return Department.objects.all()
-            return Department.objects.get(pk=pk)
-        except Department.DoesNotExist:
-            return Http404
-
-    def update(self, request, *args, **kwargs):
-        """
-        Customising update method
-        """
-
-        def updateDepartment():
-            department = get_object_or_404(Department, pk=kwargs["pk"])
-            department.image = request.data['image']
-            department.save()
-
-        return DepartmentAuthentication(request=request, update=updateDepartment, *args, **kwargs)
-
-    def partial_update(self, request, *args, **kwargs):
-        """
-        Customising partial update method
-        """
-
-        def updateDepartment():
-            department = get_object_or_404(Department, pk=kwargs["pk"])
-            keys = list(request.data.keys())
-            if "image" in request.data.keys():
-                department.image = request.data["image"]
-            department.save()
-
-        return DepartmentAuthentication(request=request, update=updateDepartment, *args, **kwargs)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def get(self, request: Request, *args, **kwargs):
         """

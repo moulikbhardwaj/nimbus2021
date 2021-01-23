@@ -48,7 +48,6 @@ class Question(Model):
     option4 = ForeignKey(Answer, related_name='option4', on_delete=CASCADE)
 
     correct = ForeignKey(Answer, on_delete=CASCADE)
-
     quiz = ForeignKey(Quiz, on_delete=CASCADE)
 
 
