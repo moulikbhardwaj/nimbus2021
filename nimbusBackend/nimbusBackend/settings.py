@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'events',
     'members',
     'omegleClone',
-    
+
     # Documentation
     'drf_yasg',
 ]
@@ -70,6 +70,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
 ]
+
+TIME_ZONE = 'Asia/Kolkata'
+
 
 ROOT_URLCONF = 'nimbusBackend.urls'
 
@@ -139,14 +142,13 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 
-if DEBUG==True:
-    MEDIA_ROOT = Path.joinpath(BASE_DIR,'media')
-    STATIC_ROOT = Path.joinpath(BASE_DIR,'static')
+if DEBUG == True:
+    MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
+    STATIC_ROOT = Path.joinpath(BASE_DIR, 'static')
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=1)
 }
-
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
 

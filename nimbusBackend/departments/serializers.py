@@ -6,8 +6,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from django.contrib.auth.models import User
 
-class DepartmentSerializer(ModelSerializer):
 
+class DepartmentSerializer(ModelSerializer):
     class Meta:
         model = Department
 
@@ -27,12 +27,13 @@ class DepartmentSerializer(ModelSerializer):
         department.save()
         return department
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
         try:
-            data.update({"name":self.user.get_username()})
-            data.update({"image":self.context['request'].build_absolute_uri(self.user.department.image.url)})
+            data.update({"name": self.user.get_username()})
+            data.update({"image": self.context['request'].build_absolute_uri(self.user.department.image.url)})
         except:
             pass
         return data

@@ -9,10 +9,8 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelM
 
 from departments.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
 from departments.serializers import DepartmentSerializer
+
 
 class DepartmentsView(GenericAPIView, ListModelMixin, CreateModelMixin, UpdateModelMixin):
     serializer_class = DepartmentSerializer
@@ -20,7 +18,6 @@ class DepartmentsView(GenericAPIView, ListModelMixin, CreateModelMixin, UpdateMo
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminOrReadOnly]
-
 
     def get(self, request: Request):
         """
