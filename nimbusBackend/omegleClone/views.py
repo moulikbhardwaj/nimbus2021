@@ -20,6 +20,9 @@ def joinVCView(request, uid):
     # Uncomment the following code to check if the user exists
     # if User.objects.filter(firebase=uid).exists() == False:
     #     return Response({"Message": "Invalid User ID"}, status.HTTP_400_BAD_REQUEST)
+    users = User.objects.filter(firebase=uid)
+    if len(users) > 0 and users[0].omegleAllowed == False:
+        return Response({"Message": "Not allowed"}, status.HTTP_403_FORBIDDEN)
     entry = VCQueue.objects.filter(uid=uid)
     if len(entry) == 0:
         # If the user doesn't exist'
@@ -53,11 +56,35 @@ def joinVCView(request, uid):
             user2.channel = channel
             user1.token = token1
             user2.token = token2
+            user1.uid2 = user2.uid
+            user2.uid2 = user1.uid
+            VCLog.objects.create(
+                channel=channel,
+                uid1 = user1.uid,
+                uid2 = user2.uid
+            )
             user2.save()
             response = serialize(user1)
             user1.delete()
             return Response(response)
     return Response({"Message": "Waiting for someone else to join"})
+
+@api_view()
+def logView(request, channel):
+    queryset = VCLog.objects.filter(channel=channel)
+    if len(queryset) > 0:
+        queryset[0].save()
+        return Response({})
+    return Response({"Message:" "Invalid channel"}, status.HTTP_400_BAD_REQUEST)
+
+@api_view()
+def reportView(request, uid):
+    queryset = User.objects.filter(firebase=uid)
+    if len(queryset) > 0:
+        queryset[0].omegleReports += 1
+        queryset[0].save()
+        return Response({"Message": "Reported"})
+    return Response({"Message:" "Invalid uid"}, status.HTTP_400_BAD_REQUEST)
 
 def getChannel():
     return uuid.uuid4().hex
@@ -92,6 +119,7 @@ def isExpired(entry: VCQueue):
 def serialize(queueObj : VCQueue):
     return {
         'uid': queueObj.uid,
+        'uid2': queueObj.uid2,
         'channel': queueObj.channel,
         'token': queueObj.token
     }
