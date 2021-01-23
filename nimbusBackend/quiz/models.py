@@ -41,6 +41,7 @@ class Question(Model):
     Quiz Question Details
     """
     text = CharField('text', max_length=512)
+
     option1 = ForeignKey(Answer, related_name='option1', on_delete=CASCADE)
     option2 = ForeignKey(Answer, related_name='option2', on_delete=CASCADE)
     option3 = ForeignKey(Answer, related_name='option3', on_delete=CASCADE)
