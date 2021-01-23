@@ -2,27 +2,17 @@ from django.http.response import Http404
 from quiz.models import Quiz, ScoreBoard, Question, Answer, QuizScoreBoard
 from rest_framework.request import Request
 from rest_framework.generics import GenericAPIView
-from datetime import datetime
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin
 from django.utils import timezone
 from quiz.serializers import QuizSerializer, ScoreBoardSerializer, QuizScoreBoardSerializer, QuestionSerializer, \
-    QuestionSerializerFull
-from rest_framework.status import HTTP_400_BAD_REQUEST
-
-# Create your views here.
-from rest_framework.response import Response
-
-from utils.helper_response import InternalServerErrorResponse, InvalidQuizIdResponse, QuizNotStartedResponse
-
-
+    QuestionSerializerFull, ResponseSerializer, QuizResponseSerializer
+from utils.helper_response import InternalServerErrorResponse, InvalidQuizIdResponse, QuizNotStartedResponse, \
+    InvalidUserIdResponse, QuizAlreadyAttemptedResponse, InvalidQuestionIdResponse
 from quiz.serializers import QuizSerializer, ScoreBoardSerializer, QuizScoreBoardSerializer
 from rest_framework.status import HTTP_400_BAD_REQUEST
-
-# Create your views here.
 from rest_framework.response import Response
 
-from quiz.models import QuizScoreBoard
-
+from users.models import User
 
 
 class QuizzesView(GenericAPIView, ListModelMixin, CreateModelMixin):
@@ -104,6 +94,9 @@ class QuestionView(GenericAPIView, CreateModelMixin):
     serializer_class = QuestionSerializer
 
     def get(self, request: Request, pk):
+        """
+        Get Quiz Questions
+        """
         try:
             quiz = Quiz.objects.get(id=pk)
         except Quiz.DoesNotExist:
@@ -114,6 +107,9 @@ class QuestionView(GenericAPIView, CreateModelMixin):
             return QuizNotStartedResponse
 
     def post(self, request: Request, pk):
+        """
+        Create Quiz Question
+        """
         try:
             quiz = Quiz.objects.get(id=pk)
         except Quiz.DoesNotExist:
@@ -162,3 +158,57 @@ def getCorrectOption(option1, option2, option3, option4, correct):
         return option3
     else:
         return option4
+
+
+class CheckResponses(GenericAPIView):
+    """
+    Match User Responses
+    """
+    serializer_class = ResponseSerializer
+
+    def post(self, request: Request):
+        """
+        Mark Quiz Responses
+        """
+        score = 0
+        data = request.data
+        serializer = ResponseSerializer(data=data)
+        if serializer.is_valid():
+            try:
+                quiz = Quiz.objects.get(id=serializer.data['quizId'])
+            except Quiz.DoesNotExist:
+                return InvalidQuizIdResponse
+            try:
+                user = User.objects.get(firebase=serializer.data['userId'])
+            except User.DoesNotExist:
+                return InvalidUserIdResponse
+            if len(QuizScoreBoard.objects.filter(quiz=quiz, user=user)) != 0:
+                return QuizAlreadyAttemptedResponse
+            data = serializer.data
+            for answer in data['responses']:
+                responseSerializer = QuizResponseSerializer(data=answer)
+                if responseSerializer.is_valid():
+                    questionId = answer['questionId']
+                    answerId = answer['answerId']
+                    try:
+                        question = Question.objects.get(id=questionId)
+                    except Question.DoesNotExist:
+                        return InvalidQuestionIdResponse
+                    if question.correct.id == answerId:
+                        score += 1
+                        score *= score
+                else:
+                    return Response(responseSerializer.errors)
+            scoreForUser = QuizScoreBoard.objects.create(quiz=quiz, user=user, score=score)
+            scoreForUser.save()
+            centralScore = ScoreBoard.objects.filter(user=user)
+            if len(centralScore) == 0:
+                ScoreBoard.objects.create(user=user, score=score).save()
+            else:
+                centralScore = centralScore[0]
+                centralScore.score += centralScore.score
+                centralScore.save()
+            return Response({"score": score})
+        else:
+            return Response(serializer.errors, HTTP_400_BAD_REQUEST)
+

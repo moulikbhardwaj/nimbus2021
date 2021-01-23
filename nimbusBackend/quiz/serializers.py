@@ -1,5 +1,7 @@
+from abc import ABC
+
 from quiz.models import Quiz, Question, ScoreBoard, QuizScoreBoard, Answer
-from rest_framework.serializers import ModelSerializer, CharField, IntegerField
+from rest_framework.serializers import ModelSerializer, CharField, IntegerField, Serializer, ListField, DictField
 from rest_framework.validators import UniqueTogetherValidator
 
 from users.serializers import UserSerializerForScoreBoard
@@ -71,7 +73,21 @@ class ScoreBoardSerializer(ModelSerializer):
 
 class QuizScoreBoardSerializer(ModelSerializer):
     user = UserSerializerForScoreBoard()
-
     class Meta:
         model = QuizScoreBoard
         fields = "__all__"
+
+
+class QuestionResponse(DictField):
+    questionId = IntegerField(min_value=1)
+    answerId = IntegerField(min_value=1)
+
+
+class ResponseSerializer(Serializer):
+    quizId = CharField(help_text="Quiz Id", max_length=256)
+    userId = CharField(help_text="User Firebase Id", max_length=256)
+    responses = ListField(child=QuestionResponse(), min_length=1)
+
+class QuizResponseSerializer(Serializer):
+    questionId = IntegerField(min_value=1)
+    answerId = IntegerField(min_value=1)

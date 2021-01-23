@@ -15,3 +15,9 @@ DepartMentNotFoundErrorResponse = Response({"error": "Department not found. Plea
 InvalidQuizIdResponse = Response({"message": "Invalid QuizId"}, HTTP_400_BAD_REQUEST)
 
 QuizNotStartedResponse = Response({"message": "Quiz Not Started Yet."}, HTTP_400_BAD_REQUEST)
+
+InvalidUserIdResponse = Response({"message": "Invalid UserId."}, HTTP_400_BAD_REQUEST)
+
+QuizAlreadyAttemptedResponse = Response({"message": "Quiz Already Attempted"})
+
+InvalidQuestionIdResponse = Response({"message": "Invalid QuestionId"}, HTTP_400_BAD_REQUEST)
