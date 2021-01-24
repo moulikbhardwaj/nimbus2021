@@ -1,7 +1,8 @@
 from rest_framework import authentication, serializers
 from rest_framework import permissions
 from rest_framework.generics import GenericAPIView, get_object_or_404
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin, \
+    UpdateModelMixin
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
@@ -12,6 +13,7 @@ from events.models import Event
 from events.serializers import EventSerializer
 from events.permissions import IsOwnerOrReadonly
 
+
 # Create your views here.
 
 class EventsView(GenericAPIView, ListModelMixin, CreateModelMixin):
@@ -19,34 +21,34 @@ class EventsView(GenericAPIView, ListModelMixin, CreateModelMixin):
 
     def get_queryset(self):
         queryset = Event.objects.all()
-        if self.request.query_params.get('type')=='departmental':
+        if self.request.query_params.get('type') == 'departmental':
             queryset = queryset.filter(Type=0)
-        elif self.request.query_params.get('type')=='institutional':
+        elif self.request.query_params.get('type') == 'institutional':
             queryset = queryset.filter(Type=1)
-        elif self.request.query_params.get('type')=='talk':
+        elif self.request.query_params.get('type') == 'talk':
             queryset = queryset.filter(Type=2)
-        elif self.request.query_params.get('type')=='exhibition':
+        elif self.request.query_params.get('type') == 'exhibition':
             queryset = queryset.filter(Type=3)
-        elif self.request.query_params.get('type')=='workshop':
+        elif self.request.query_params.get('type') == 'workshop':
             queryset = queryset.filter(Type=4)
-        
+
         if self.request.query_params.get('department', None) != None:
-            queryset = queryset.filter(department__name = self.request.query_params.get("department"))
+            queryset = queryset.filter(department__name=self.request.query_params.get("department"))
         return queryset
-            
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get(self, request:Request):
+    def get(self, request: Request):
         """
         Returns a list of all events/talks/workshops/exhibitions
         """
         return self.list(self, request)
-    
-    def post(self, request:Request, *args, **kwargs):
+
+    def post(self, request: Request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
-    
+
+
 class EventView(GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin):
     serializer_class = EventSerializer
     queryset = Event.objects.all()
@@ -56,12 +58,12 @@ class EventView(GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyMod
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
-    
+
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
-    
+
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
-    
+
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)

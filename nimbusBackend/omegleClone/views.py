@@ -8,6 +8,7 @@ from .models import VCQueue, VCLog
 from users.models import User
 from .RtcTokenBuilder import RtcTokenBuilder, Role_Publisher
 
+
 # Create your views here.
 
 # https://numbus2021-omegle-token-gen.herokuapp.com/access_token?channel=test&uid=222
@@ -112,11 +113,13 @@ def getTokens(uid1, uid2, channel):
     )
     return token1, token2
 
+
 def isExpired(entry: VCQueue):
     EXPIRE_TIME = 3
     return (datetime.datetime.now().timestamp() - entry.lastPingTime.timestamp() > EXPIRE_TIME)
 
-def serialize(queueObj : VCQueue):
+
+def serialize(queueObj: VCQueue):
     return {
         'uid': queueObj.uid,
         'uid2': queueObj.uid2,
