@@ -73,6 +73,7 @@ class ScoreBoardSerializer(ModelSerializer):
 
 class QuizScoreBoardSerializer(ModelSerializer):
     user = UserSerializerForScoreBoard()
+
     class Meta:
         model = QuizScoreBoard
         fields = "__all__"
@@ -88,6 +89,12 @@ class ResponseSerializer(Serializer):
     userId = CharField(help_text="User Firebase Id", max_length=256)
     responses = ListField(child=QuestionResponse(), min_length=1)
 
+
 class QuizResponseSerializer(Serializer):
     questionId = IntegerField(min_value=1)
     answerId = IntegerField(min_value=1)
+
+
+class QuizPlayedOrNotSerializer(Serializer):
+    quizId = CharField(max_length=256)
+    userId = CharField(max_length=256)

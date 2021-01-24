@@ -30,7 +30,7 @@ def userPresentOrNot(request, email):
         user = User.objects.get(email=email)
         return Response({"user_present": True})
     except User.DoesNotExist:
-        return Response({"user_present": False}, HTTP_404_NOT_FOUND)
+        return Response({"user_present": False})
 
 
 class UsersView(GenericAPIView):

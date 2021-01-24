@@ -8,7 +8,7 @@ from quiz.serializers import QuizSerializer, ScoreBoardSerializer, QuizScoreBoar
     QuestionSerializerFull, ResponseSerializer, QuizResponseSerializer
 from utils.helper_response import InternalServerErrorResponse, InvalidQuizIdResponse, QuizNotStartedResponse, \
     InvalidUserIdResponse, QuizAlreadyAttemptedResponse, InvalidQuestionIdResponse
-from quiz.serializers import QuizSerializer, ScoreBoardSerializer, QuizScoreBoardSerializer
+from quiz.serializers import QuizSerializer, ScoreBoardSerializer, QuizScoreBoardSerializer, QuizPlayedOrNotSerializer
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
 
@@ -172,6 +172,7 @@ class CheckResponses(GenericAPIView):
         """
         score = 0
         data = request.data
+        print(data)
         serializer = ResponseSerializer(data=data)
         if serializer.is_valid():
             try:
@@ -212,3 +213,24 @@ class CheckResponses(GenericAPIView):
         else:
             return Response(serializer.errors, HTTP_400_BAD_REQUEST)
 
+
+class CheckQuizPlayedOrNot(GenericAPIView):
+    serializer_class = QuizPlayedOrNotSerializer
+
+    def post(self, request):
+        serializer = QuizPlayedOrNotSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                quiz = Quiz.objects.get(id=serializer.data['quizId'])
+            except Quiz.DoesNotExist:
+                return InvalidQuizIdResponse
+            try:
+                user = User.objects.get(firebase=serializer.data['userId'])
+            except User.DoesNotExist:
+                return InvalidUserIdResponse
+            if len(QuizScoreBoard.objects.filter(quiz=quiz, user=user)) != 0:
+                return Response({"attempted": True})
+            else:
+                return Response({"attempted": False})
+        else:
+            return Response(serializer.errors, HTTP_400_BAD_REQUEST)
