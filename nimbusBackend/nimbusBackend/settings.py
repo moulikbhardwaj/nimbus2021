@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import datetime
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,6 +56,9 @@ INSTALLED_APPS = [
 
     # Documentation
     'drf_yasg',
+
+    #Styling
+    'bootstrap4'
 ]
 
 MIDDLEWARE = [
@@ -79,7 +83,7 @@ ROOT_URLCONF = 'nimbusBackend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

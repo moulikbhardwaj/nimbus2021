@@ -1,0 +1,42 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="font-family: monospace, monospace">
+    <a class="navbar-brand" style="margin-left: 20px" href="{% url 'quizPanelHome' %}">
+        <img src="https://robosocnith.com/assets/images/16708476-1625043897512330-9080518663011881978-n-2018040415-676x675.jpeg"
+             width="50" height="40"
+             class="d-inline-block align-top" style="border-radius: 10px">
+        <h3 style="display: inline-block; color: white">Nimbus Quiz Panel</h3>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'quizPanelCreateQuiz' %}">Create-Quiz</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'quizPanelCreateQuestion' %}">Create-Question</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link">View-Questions</a>
+            </li>
+        </ul>
+        {% if request.user.username %}
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'quizPanelLogout' %}">Logout</a>
+                </li>
+            </ul>
+        {% else %}
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'quizPanelLogin' %}">Login</a>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+</nav>
