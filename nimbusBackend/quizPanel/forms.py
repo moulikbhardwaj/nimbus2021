@@ -2,6 +2,7 @@ from django import forms
 from django.forms import CharField, IntegerField, ChoiceField
 from departments.models import Department
 from quiz.models import Quiz
+from bootstrap_datepicker_plus import DateTimePickerInput
 
 
 class LoginForm(forms.ModelForm):
@@ -16,7 +17,8 @@ class CreateQuestionForm(forms.Form):
     option_2 = CharField(max_length=256, min_length=1)
     option_3 = CharField(max_length=256, min_length=1)
     option_4 = CharField(max_length=256, min_length=1)
-    correct_option = ChoiceField(choices=(('1', '1'), ('2', '2'), ('3', '3'), ('4', '4')))
+    correct_option = ChoiceField(help_text="Choose a correct option from dropdown menu",
+                                 choices=(('1', '1'), ('2', '2'), ('3', '3'), ('4', '4')))
 
 
 class DateInput(forms.DateTimeInput):
@@ -28,6 +30,6 @@ class QuizForm(forms.ModelForm):
         model = Quiz
         fields = ["name", "startTime", "endTime", "count", "sendCount"]
         widgets = {
-            'startTime': DateInput(attrs={'type': 'datetime-local'}),
-            'endTime': DateInput(attrs={'type': 'datetime-local'})
+            'startTime': DateTimePickerInput(),
+            'endTime': DateTimePickerInput()
         }

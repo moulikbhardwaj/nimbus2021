@@ -13,6 +13,7 @@
             width: fit-content;
             margin: 0 auto;
             margin-top: 3rem !important;
+            text-align: center;
         }
 
         .heading {
@@ -84,6 +85,7 @@
             margin-right: 10%;
         }
 
+
         .card h2 {
             color: snow;
             margin-bottom: 1rem;
@@ -104,52 +106,133 @@
             }
         }
 
+        label {
+            color: white;
+        }
+
         @media (max-width: 736px) {
             .card {
                 width: 80%;
             }
         }
 
+        h1, h3 {
+            color: white;
+            text-align: center;
+        }
+
+        .form {
+            background-color: rgba(0, 0, 0, .5);
+            color: white !important;
+        }
+
+        .form img {
+            border-radius: 10px;
+        }
+
+        .modal-body input {
+            color: black;
+        }
 
     </style>
 {% endblock %}
 {% block body %}
     {% include 'navbar.html' %}
-    <div id="home-icon-bar">
-        <div>
-            <a href="{% url 'quizPanelCreateQuiz' %}">
-                <button class="btn btn-dark">Create Quiz</button>
+    <div style="margin: 1rem auto; width: 500px; padding: .5rem;  box-shadow: 5px 5px 10px 5px #888888;border-radius: 1rem;"
+         class="form">
+        <div class="modal-header">
+            <img src="https://i1.wp.com/www.indcareer.com/events/wp-content/uploads/2018/02/NIMBUS.jpg?w=960&ssl=1"
+                 width="90"
+                 height="90"
+                 id="image">
+            <h1 style="color: white">Quiz Details</h1>
+        </div>
+        <div class="modal-body">
+            <label style=" font-size: 20px">Quiz Title</label>
+            <input class="form-control" disabled value="{{ quiz.name }}"/>
+            <label style=" font-size: 20px">Start Time</label>
+            <input class="form-control" disabled value="{{ quiz.startTime }}"/>
+            <label style="font-size: 20px">End Time</label>
+            <input class="form-control" disabled value="{{ quiz.endTime }}"/>
+        </div>
+        <div class="modal-footer">
+            <a href="{% url 'quizPanelUpdateQuiz' quiz.id %}">
+                <button class="btn btn-light">Update</button>
             </a>
-            <button class="btn btn-dark">Details</button>
-            <button class="btn btn-dark">Upload Question Via Excel Sheet</button>
-            <a href="{% url 'quizPanelLogout' %}">
-                <button class="btn btn-dark">Logout</button>
+            <a href="{% url 'quizPanelCreateQuestion' quiz.id %}">
+                <button class="btn btn-light">Add Questions</button>
             </a>
         </div>
     </div>
     <div>
-        <h1 class="heading">Quiz</h1>
+        <h1 class="heading">Questions</h1>
+        <h3 class="heading">Total Question : {{ questions|length }}</h3>
     </div>
     <div class="row">
-        {% for quiz in quizzes %}
+        {% for question in questions %}
             <div class="card">
-                <h2>{{ quiz.name }}</h2>
-                <p>StartTime :{{ quiz.startTime }}</p>
-                <p>EndTime :{{ quiz.endTime }}</p>
+                <div class="modal-header">
+                    <h1>Question</h1>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>Question Statement</label>
+                        <div class="form-control"
+                             style="width: 100%; height: 150px; overflow: scroll;font-size: 18px; overscroll-behavior-x: none"
+                             disabled>{{ question.text }}</div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>Option 1</label>
+                        <textarea class="form-control" style="width: 100%; height: 30px"
+                                  disabled>{{ question.option1.text }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>Option 2</label>
+                        <textarea class="form-control" style="width: 100%; height: 30px"
+                                  disabled>{{ question.option2.text }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>Option 3</label>
+                        <textarea class="form-control" style="width: 100%; height: 30px"
+                                  disabled>{{ question.option3.text }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>Option 4</label>
+                        <textarea class="form-control" style="width: 100%;height: 30px"
+                                  disabled>{{ question.option4.text }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>Correct Option</label>
+                        <textarea class="form-control" style="width: 100%;height: 30px"
+                                  disabled>{{ question.correct.text }}</textarea>
+                    </div>
+                </div>
                 <div class="modal-footer">
-                    <a href="{% url 'quizPanelQuizDetails' quiz.id %}">
-                        <button class="btn btn-dark">Details</button>
+                    <a href="{% url 'quizPanelUpdateQuestion' question.id %}">
+                        <button class="btn btn-dark">Edit</button>
                     </a>
+                    <button class="btn btn-dark">Delete</button>
                 </div>
             </div>
         {% empty %}
             <div id="home-icon-bar">
-                <h3>No Quiz Present</h3>
-                <a href="{% url 'quizPanelCreateQuiz' %}">
-                    <button class="btn btn-dark">Create Quiz</button>
+                <h3>No Questions Present</h3>
+                <a href="{% url 'quizPanelCreateQuestion' quiz.id %}">
+                    <button class="btn btn-dark">Add Questions</button>
                 </a>
             </div>
         {% endfor %}
     </div>
+
 
 {% endblock %}

@@ -58,7 +58,9 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     #Styling
-    'bootstrap4'
+    'bootstrap4',
+    'bootstrap_datepicker_plus',
+
 ]
 
 MIDDLEWARE = [

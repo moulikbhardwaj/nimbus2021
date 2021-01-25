@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+        }
+
+        .background {
+
+            position: absolute;
+
+            display: block;
+
+            top: 0;
+
+            left: 0;
+
+            height: 100%;
+
+        }
+
+        form {
+        }
+
+        label, form h1 {
+            color: white;
+        }
+
+        #image {
+            background-color: black !important;
+            background: black !important;
+            border-radius: 10px;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <canvas class="background"></canvas>
+    {% include 'navbar.html' %}
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    {{ form.media }}
+    {% bootstrap_javascript jquery='full' %}
+    <div style="font-family: monospace; padding: 1rem; ">
+        <div style="margin: 0 auto; width: 500px; padding: .5rem;  box-shadow: 5px 5px 10px 5px #888888;border-radius: 1rem; background-color: black; z-index: 10"
+             class="form">
+            <form method="POST" class="form-group">
+                <div class="modal-header">
+                    <img src="https://i1.wp.com/www.indcareer.com/events/wp-content/uploads/2018/02/NIMBUS.jpg?w=960&ssl=1"
+                         width="90"
+                         height="90"
+                         id="image">
+                    <h1>Update Question</h1>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="modal-footer">
+                    {% buttons %}
+                        <button type="reset" class="btn btn-danger">Reset</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    {% endbuttons %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
+    <script>
+        window.onload
+            = function () {
+            Particles.init
+            ({
+                color: "#000000",
+                selector: '.background',
+                maxParticles:
+                    200
+                ,
+                connectParticles: true,
+            });
+        };
+    </script>
+{% endblock %}
