@@ -4,7 +4,8 @@ from . import views
 # from users.views import UserView, UsersView
 
 urlpatterns = [
-	# path("", UsersView.as_view()),
-    # path("<str:pk>/", UserView.as_view()),
-    path("joinvc/<str:uid>", views.joinVCView)
+    path("joinvc/<str:uid>", views.joinVCView),
+    path("log/<str:channel>", views.logView),
+    path("report/<str:uid>", views.reportView),
+
 ]

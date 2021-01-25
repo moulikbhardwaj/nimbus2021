@@ -9,6 +9,7 @@ class VCQueue(models.Model):
     lastPingTime = models.DateTimeField(auto_now=True)
     channel = models.CharField(max_length=100, default='')
     token = models.CharField(max_length=256, default='')
+    uid2 = models.CharField(max_length=128, default='')
 
     class Meta:
         ordering = ['enterTime']
