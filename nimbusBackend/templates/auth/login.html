@@ -27,7 +27,12 @@
                          height="90">
                     <h1>Login</h1>
                 </div>
-
+                {% if message %}
+                    <div class="alert alert-danger" role="alert"
+                         style="margin-top: 1rem; margin-right: 1rem; margin-left: 1rem">
+                        {{ message }}
+                    </div>
+                {% endif %}
                 <div class="modal-body">
                     {% csrf_token %}
                     {% if next %}

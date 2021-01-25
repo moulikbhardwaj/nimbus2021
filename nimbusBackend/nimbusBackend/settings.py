@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     # Documentation
     'drf_yasg',
 
-    #Styling
+    # Styling
     'bootstrap4',
     'bootstrap_datepicker_plus',
 
@@ -78,7 +78,6 @@ MIDDLEWARE = [
 ]
 
 TIME_ZONE = 'Asia/Kolkata'
-
 
 ROOT_URLCONF = 'nimbusBackend.urls'
 
@@ -167,3 +166,5 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+LOGIN_URL = "/quizPanel/login"

@@ -4,7 +4,9 @@ from django.views import View
 from .forms import LoginForm, CreateQuestionForm, QuizForm
 from quiz.models import Quiz, Question, Answer
 from departments.models import Department
-
+from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from uuid import uuid1
 
 class LoginView(View):
 
@@ -12,7 +14,19 @@ class LoginView(View):
         return render(request, template_name="auth/login.html", context={"form": LoginForm(), "title": "Login"})
 
     def post(self, request):
-        pass
+        data = request.POST
+        try:
+            department = Department.objects.get(name=data['name'])
+        except Department.DoesNotExist:
+            return render(request, template_name="auth/login.html",
+                          context={"form": LoginForm(), "title": "Login", "message": "Invalid Department Name."})
+
+        if department.password == data['password']:
+            login(request, department.user)
+            return HttpResponseRedirect(reverse_lazy("quizPanelHome"))
+        else:
+            return render(request, template_name="auth/login.html",
+                          context={"form": LoginForm(), "title": "Login", "message": "Invalid Password"})
 
 
 class LogoutView(View):
@@ -21,10 +35,11 @@ class LogoutView(View):
         return render(request, template_name="auth/logout.html", context={"title": "Logout"})
 
     def post(self, request):
-        pass
+        logout(request)
+        return HttpResponseRedirect(reverse_lazy('quizPanelLogin'))
 
 
-class CreateQuestionView(View):
+class CreateQuestionView(LoginRequiredMixin, View):
 
     def get(self, request, id):
         return render(request, template_name="quiz/create-question.html",
@@ -67,7 +82,7 @@ class CreateQuestionView(View):
                           context={"form": CreateQuestionForm(), "title": "Create Question"})
 
 
-class UpdateQuestionView(View):
+class UpdateQuestionView(LoginRequiredMixin, View):
 
     def get(self, request, id):
         question = Question.objects.get(id=id)
@@ -112,14 +127,15 @@ class UpdateQuestionView(View):
                           context={"form": form, "title": "Update Question"})
 
 
-class HomeView(View):
+class HomeView(LoginRequiredMixin, View):
 
     def get(self, request):
-        quizzes = Quiz.objects.all()
+        department = Department.objects.get(user=request.user)
+        quizzes = Quiz.objects.all().filter(department=department)
         return render(request, template_name="quiz/Home.html", context={"title": "Home", "quizzes": quizzes})
 
 
-class QuizView(View):
+class QuizView(LoginRequiredMixin, View):
 
     def get(self, request, id):
         quiz = get_object_or_404(Quiz, pk=id)
@@ -128,7 +144,7 @@ class QuizView(View):
                       context={"title": "Quiz Details", "quiz": quiz, "questions": questions})
 
 
-class CreateQuizView(View):
+class CreateQuizView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, template_name="quiz/create-quiz.html",
                       context={"form": QuizForm(), "title": "Create Quiz"})
@@ -138,13 +154,15 @@ class CreateQuizView(View):
         if form.is_valid():
             data = form.cleaned_data
             print(data)
+            print(Department.objects.get(user=request.user))
             quiz = Quiz.objects.create(
+                id=uuid1(),
                 name=data["name"],
                 startTime=data["startTime"],
                 endTime=data["endTime"],
                 count=data["count"],
                 sendCount=data["sendCount"],
-                department=Department.objects.get(name="Cse Department")
+                department=Department.objects.get(user=request.user)
             )
             quiz.save()
             return HttpResponseRedirect(reverse_lazy('quizPanelHome'))
@@ -153,7 +171,7 @@ class CreateQuizView(View):
                           context={"form": form, "title": "Create Quiz"})
 
 
-class UpdateQuizView(View):
+class UpdateQuizView(LoginRequiredMixin, View):
     def get(self, request, id):
         quiz = Quiz.objects.get(id=id)
         form = QuizForm(instance=quiz)

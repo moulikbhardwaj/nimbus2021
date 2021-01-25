@@ -6,7 +6,6 @@ from django.db.models.fields import CharField
 from django.db.models.fields.related import OneToOneField
 
 
-
 # Create your models here.
 class Department(Model):
     name = CharField("name", primary_key=True, max_length=255, unique=True, null=False)
