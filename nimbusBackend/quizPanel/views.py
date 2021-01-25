@@ -174,7 +174,7 @@ class UpdateQuizView(View):
             return HttpResponseRedirect(reverse_lazy('quizPanelQuizDetails', kwargs={"id": id}))
         else:
             return render(request, template_name="quiz/update-quiz.html",
-                          context={"form": form, "title": "Create Quiz"})
+                          context={"form": form, "title": "Update Quiz"})
 
 
 def getCorrectOption(option1, option2, option3, option4, correct):
