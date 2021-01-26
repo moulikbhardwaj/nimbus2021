@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        body {
+            background-color: #3b3b3f;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3E%3Cpolygon fill='%230f0101' points='957 450 539 900 1396 900'/%3E%3Cpolygon fill='%23bfbfbf' points='957 450 872.9 900 1396 900'/%3E%3Cpolygon fill='%23424141' points='-60 900 398 662 816 900'/%3E%3Cpolygon fill='%23373737' points='337 900 398 662 816 900'/%3E%3Cpolygon fill='%23858485' points='1203 546 1552 900 876 900'/%3E%3Cpolygon fill='%235c5c5c' points='1203 546 1552 900 1162 900'/%3E%3Cpolygon fill='%2367676a' points='641 695 886 900 367 900'/%3E%3Cpolygon fill='%235e5e5e' points='587 900 641 695 886 900'/%3E%3Cpolygon fill='%23313437' points='1710 900 1401 632 1096 900'/%3E%3Cpolygon fill='%23525252' points='1710 900 1401 632 1365 900'/%3E%3Cpolygon fill='%233f4344' points='1210 900 971 687 725 900'/%3E%3Cpolygon fill='%23010101' points='943 900 1210 900 971 687'/%3E%3C/svg%3E");
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    {% include 'navbar.html' %}
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    {{ form.media }}
+    {% bootstrap_javascript jquery='full' %}
+    <div style="font-family: monospace; padding: 1rem; z-index: 10; ">
+        <div style="margin: 0 auto; width: 80%; height: 80%; overflow: scroll; padding: .5rem;  box-shadow: 5px 5px 10px 5px #888888;border-radius: 1rem; background-color: white">
+            <div>
+                <h1 style="display: inline-block">Quiz : {{ quiz.name }}</h1>
+                <a href="{% url 'quizPanelLeaderBoardGenerateExcel'  quiz.id %}">
+                    <button class="btn btn-primary" style="margin-left: 2rem; margin-bottom: 12px">Download Excel Sheet
+                        of results
+                    </button>
+                </a>
+            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email Id</th>
+                    <th scope="col">Phone Number</th>
+                    <th scope="col">Score</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for result in results %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ result.user.firstName }}</td>
+                        <td>{{ result.user.lastName }}</td>
+                        <td>{{ result.user.email }}</td>
+                        <td>{{ result.user.phone }}</td>
+                        <td><strong>{{ result.score }}</strong></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td style="font-size: 20px">No Entries Till Now</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

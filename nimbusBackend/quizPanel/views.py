@@ -2,11 +2,14 @@ from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import LoginForm, CreateQuestionForm, QuizForm
-from quiz.models import Quiz, Question, Answer
+from quiz.models import Quiz, Question, Answer, QuizScoreBoard, ScoreBoard
 from departments.models import Department
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from uuid import uuid1
+import xlwt
+from django.http import HttpResponse
+
 
 class LoginView(View):
 
@@ -195,6 +198,35 @@ class UpdateQuizView(LoginRequiredMixin, View):
                           context={"form": form, "title": "Update Quiz"})
 
 
+class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
+    def get(self, request, id):
+        pass
+
+    def post(self, request, id):
+        pass
+
+
+class LeaderBoardView(LoginRequiredMixin, View):
+    def get(self, request, id):
+        quiz = get_object_or_404(Quiz, pk=id)
+        ranking = QuizScoreBoard.objects.all().filter(quiz=quiz).order_by('-score')
+        print(ranking)
+        return render(request, "quiz/leaderboard.html", {"quiz": quiz, "results": ranking})
+
+
+class DetailsView(View):
+    def get(self, request):
+        pass
+
+
+class ChooseQuizView(LoginRequiredMixin, View):
+    def get(self, request):
+        department = Department.objects.get(user=request.user)
+        quizzes = Quiz.objects.all().filter(department=department)
+        return render(request, template_name="quiz/select-quiz.html",
+                      context={"title": "Choose Quiz", "quizzes": quizzes})
+
+
 def getCorrectOption(option1, option2, option3, option4, correct):
     if correct == 1:
         return option1
@@ -215,3 +247,33 @@ def getCorrectNumber(option1, option2, option3, correctOption):
         return 3
     else:
         return 4
+
+
+def export_leaderboard_xls(request, id):
+    quiz = get_object_or_404(Quiz, pk=id)
+    ranking = QuizScoreBoard.objects.all().filter(quiz=quiz).order_by('-score')
+    response = HttpResponse(content_type='application/ms-excel')
+    filename = quiz.name.replace(' ', '_')
+    response['Content-Disposition'] = f'attachment; filename="{filename}.xls"'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('LeaderBoard')
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+    columns = ['Ranking', 'First name', 'Last name', 'Email address', 'Phone', 'Score']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    for row in ranking:
+        row_num += 1
+        ws.write(row_num, 0, row_num, font_style)
+        ws.write(row_num, 1, row.user.firstName, font_style)
+        ws.write(row_num, 2, row.user.lastName, font_style)
+        ws.write(row_num, 3, row.user.email, font_style)
+        ws.write(row_num, 4, row.user.phone, font_style)
+        ws.write(row_num, 5, row.score, font_style)
+
+    font_style = xlwt.XFStyle()
+    wb.save(response)
+    return response
