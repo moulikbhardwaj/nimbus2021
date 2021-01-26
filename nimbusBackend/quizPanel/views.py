@@ -25,7 +25,7 @@ class LoginView(View):
         except Department.DoesNotExist:
             return render(request, template_name="auth/login.html",
                           context={"form": LoginForm(), "title": "Login", "message": "Invalid Department Name."})
-
+          
         if department.user.check_password(data['password']) :
             login(request, department.user)
             return HttpResponseRedirect(reverse_lazy("quizPanelHome"))

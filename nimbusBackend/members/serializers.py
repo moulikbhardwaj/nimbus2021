@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import *
+from .models import CoreTeam, Sponsors
+
 
 class CoreteamSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,9 +9,9 @@ class CoreteamSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         coreTeamMember = CoreTeam(
-            name = validated_data['name'],
-            position = validated_data['position'],
-            image = validated_data['image']
+            name=validated_data['name'],
+            position=validated_data['position'],
+            image=validated_data['image']
         )
         coreTeamMember.save()
         return coreTeamMember
@@ -23,8 +24,8 @@ class SponsorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         sponsor = Sponsors(
-            name = validated_data['name'],
-            image = validated_data['image']
+            name=validated_data['name'],
+            image=validated_data['image']
         )
         sponsor.save()
-        return sponsor   
+        return sponsor
