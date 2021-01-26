@@ -5,6 +5,7 @@ from .forms import LoginForm, CreateQuestionForm, QuizForm
 from quiz.models import Quiz, Question, Answer, QuizScoreBoard, ScoreBoard
 from departments.models import Department
 from django.contrib.auth import login, logout
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from uuid import uuid1
 import xlwt
@@ -25,7 +26,7 @@ class LoginView(View):
             return render(request, template_name="auth/login.html",
                           context={"form": LoginForm(), "title": "Login", "message": "Invalid Department Name."})
 
-        if department.password == data['password']:
+        if check_password(department.password, data['password']) or department.password == data['password']:
             login(request, department.user)
             return HttpResponseRedirect(reverse_lazy("quizPanelHome"))
         else:
