@@ -26,7 +26,7 @@ class LoginView(View):
             return render(request, template_name="auth/login.html",
                           context={"form": LoginForm(), "title": "Login", "message": "Invalid Department Name."})
 
-        if check_password(department.password, data['password']) or department.password == data['password']:
+        if check_password(data['password'], department.password) or department.password == data['password']:
             login(request, department.user)
             return HttpResponseRedirect(reverse_lazy("quizPanelHome"))
         else:
