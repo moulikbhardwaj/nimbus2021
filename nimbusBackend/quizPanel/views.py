@@ -2,11 +2,15 @@ from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import LoginForm, CreateQuestionForm, QuizForm
-from quiz.models import Quiz, Question, Answer
+from quiz.models import Quiz, Question, Answer, QuizScoreBoard, ScoreBoard
 from departments.models import Department
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from uuid import uuid1
+import xlwt
+from django.http import HttpResponse
+import pandas as pd
+
 
 class LoginView(View):
 
@@ -193,6 +197,99 @@ class UpdateQuizView(LoginRequiredMixin, View):
         else:
             return render(request, template_name="quiz/update-quiz.html",
                           context={"form": form, "title": "Update Quiz"})
+
+
+class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
+    def get(self, request, id):
+        quiz = get_object_or_404(Quiz, pk=id)
+        return render(request, "quiz/excelUpload.html", {"title": "Question Upload", "quiz": quiz})
+
+    def post(self, request, id):
+        quiz = get_object_or_404(Quiz, pk=id)
+        file = request.FILES['file']
+        data = pd.read_excel(file)
+        questions = data.to_dict('records')
+        for question in questions:
+            try:
+                if len(Question.objects.all().filter(quiz=quiz, text=question['Question Text'])) == 0:
+                    option1 = Answer(
+                        text=str(question['Option 1'])
+                    )
+                    option2 = Answer(
+                        text=str(question['Option 2'])
+                    )
+                    option3 = Answer(
+                        text=str(question['Option 3'])
+                    )
+                    option4 = Answer(
+                        text=str(question['Option 4'])
+                    )
+                    option1.save()
+                    option2.save()
+                    option3.save()
+                    option4.save()
+
+                    q = Question.objects.create(
+                        quiz_id=id,
+                        text=str(question['Question Text']),
+                        option1=option1,
+                        option2=option2,
+                        option3=option3,
+                        option4=option4,
+                        correct=getCorrectOption(option1, option2, option3, option4,
+                                                 int(question['Correct Option(1-4)']))
+                    )
+                    q.save()
+            except Exception as e:
+                print(e)
+                pass
+
+        return HttpResponseRedirect(reverse_lazy('quizPanelQuizDetails', kwargs={'id': quiz.id}))
+
+
+class LeaderBoardView(LoginRequiredMixin, View):
+    def get(self, request, id):
+        quiz = get_object_or_404(Quiz, pk=id)
+        ranking = QuizScoreBoard.objects.all().filter(quiz=quiz).order_by('-score')
+        return render(request, "quiz/leaderboard.html", {"quiz": quiz, "results": ranking, "title": "LeaderBoard"})
+
+
+class ChooseQuizView(LoginRequiredMixin, View):
+    def get(self, request):
+        department = Department.objects.get(user=request.user)
+        quizzes = Quiz.objects.all().filter(department=department)
+        return render(request, template_name="quiz/select-quiz.html",
+                      context={"title": "Choose Quiz", "quizzes": quizzes})
+
+
+def export_leaderboard_xls(request, id):
+    quiz = get_object_or_404(Quiz, pk=id)
+    ranking = QuizScoreBoard.objects.all().filter(quiz=quiz).order_by('-score')
+    response = HttpResponse(content_type='application/ms-excel')
+    filename = quiz.name.replace(' ', '_')
+    response['Content-Disposition'] = f'attachment; filename="{filename}.xls"'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('LeaderBoard')
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+    columns = ['Ranking', 'First name', 'Last name', 'Email address', 'Phone', 'Score']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    for row in ranking:
+        row_num += 1
+        ws.write(row_num, 0, row_num, font_style)
+        ws.write(row_num, 1, row.user.firstName, font_style)
+        ws.write(row_num, 2, row.user.lastName, font_style)
+        ws.write(row_num, 3, row.user.email, font_style)
+        ws.write(row_num, 4, row.user.phone, font_style)
+        ws.write(row_num, 5, row.score, font_style)
+
+    font_style = xlwt.XFStyle()
+    wb.save(response)
+    return response
 
 
 def getCorrectOption(option1, option2, option3, option4, correct):

@@ -8,13 +8,72 @@
             background-size: cover;
         }
 
+        .files input {
+            outline: 2px dashed #92b0b3;
+            outline-offset: -10px;
+            -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            padding: 120px 0px 85px 35%;
+            text-align: center !important;
+            margin: 0;
+            width: 100% !important;
+        }
+
+        .files input:focus {
+            outline: 2px dashed #92b0b3;
+            outline-offset: -10px;
+            -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            border: 1px solid #92b0b3;
+        }
+
+        .files {
+            position: relative
+        }
+
+        .files:after {
+            pointer-events: none;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 50px;
+            right: 0;
+            height: 56px;
+            content: "";
+            background-image: url(https://image.flaticon.com/icons/png/128/109/109612.png);
+            display: block;
+            margin: 0 auto;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+        .color input {
+            background-color: #f1f1f1;
+        }
+
+        .files:before {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            pointer-events: none;
+            width: 100%;
+            right: 0;
+            height: 57px;
+            display: block;
+            margin: 0 auto;
+            color: #2ea591;
+            font-weight: 600;
+            text-transform: capitalize;
+            text-align: center;
+        }
+
         .form {
             width: 500px;
         }
 
         @media (max-width: 600px) {
             .form {
-                width: 90%;
+                width: 80%;
             }
         }
     </style>
@@ -27,19 +86,22 @@
     {{ form.media }}
     {% bootstrap_javascript jquery='full' %}
     <div style="font-family: monospace; padding: 1rem; ">
-        <div style="margin: 0 auto;  padding: .5rem;  box-shadow: 5px 5px 10px 5px #888888;border-radius: 1rem; background-color: white; z-index: 10"
+        <div style="margin: 0 auto; padding: .5rem;  box-shadow: 5px 5px 10px 5px #888888;border-radius: 1rem; background-color: white; z-index: 10"
              class="form">
-            <form method="POST" class="form-group">
+            <form method="POST" class="form-group" enctype="multipart/form-data">
                 <div class="modal-header">
                     <img src="https://i1.wp.com/www.indcareer.com/events/wp-content/uploads/2018/02/NIMBUS.jpg?w=960&ssl=1"
                          width="90"
                          height="90"
                          id="image">
-                    <h1>Update Quiz</h1>
+                    <h1 style="margin-left: 10px">Upload Question Via Excel Sheet</h1>
                 </div>
                 <div class="modal-body">
                     {% csrf_token %}
-                    {% bootstrap_form form %}
+                    <h5 style="text-align: center">Quiz: {{ quiz.name }}</h5>
+                    <div class="form-group files color">
+                        <input type="file" class="form-control" accept=".xlsx" required name="file">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     {% buttons %}

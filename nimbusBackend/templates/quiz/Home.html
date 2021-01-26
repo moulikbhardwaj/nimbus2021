@@ -108,6 +108,10 @@
             .card {
                 width: 80%;
             }
+
+            #home-icon-bar {
+                width: 80%;
+            }
         }
 
 
@@ -120,8 +124,9 @@
             <a href="{% url 'quizPanelCreateQuiz' %}">
                 <button class="btn btn-dark">Create Quiz</button>
             </a>
-            <button class="btn btn-dark">Details</button>
-            <button class="btn btn-dark">Upload Question Via Excel Sheet</button>
+            <a href="{% url 'quizPanelChooseQuiz' %}">
+                <button class="btn btn-dark">Upload Question Via Excel Sheet</button>
+            </a>
             <a href="{% url 'quizPanelLogout' %}">
                 <button class="btn btn-dark">Logout</button>
             </a>
