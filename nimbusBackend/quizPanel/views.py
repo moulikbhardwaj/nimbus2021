@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from uuid import uuid1
 import xlwt
 from django.http import HttpResponse
+import pandas as pd
 
 
 class LoginView(View):
@@ -200,23 +201,57 @@ class UpdateQuizView(LoginRequiredMixin, View):
 
 class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
     def get(self, request, id):
-        pass
+        quiz = get_object_or_404(Quiz, pk=id)
+        return render(request, "quiz/excelUpload.html", {"title": "Question Upload", "quiz": quiz})
 
     def post(self, request, id):
-        pass
+        quiz = get_object_or_404(Quiz, pk=id)
+        file = request.FILES['file']
+        data = pd.read_excel(file)
+        questions = data.to_dict('records')
+        for question in questions:
+            try:
+                if len(Question.objects.all().filter(quiz=quiz, text=question['Question Text'])) == 0:
+                    option1 = Answer(
+                        text=str(question['Option 1'])
+                    )
+                    option2 = Answer(
+                        text=str(question['Option 2'])
+                    )
+                    option3 = Answer(
+                        text=str(question['Option 3'])
+                    )
+                    option4 = Answer(
+                        text=str(question['Option 4'])
+                    )
+                    option1.save()
+                    option2.save()
+                    option3.save()
+                    option4.save()
+
+                    q = Question.objects.create(
+                        quiz_id=id,
+                        text=str(question['Question Text']),
+                        option1=option1,
+                        option2=option2,
+                        option3=option3,
+                        option4=option4,
+                        correct=getCorrectOption(option1, option2, option3, option4,
+                                                 int(question['Correct Option(1-4)']))
+                    )
+                    q.save()
+            except Exception as e:
+                print(e)
+                pass
+
+        return HttpResponseRedirect(reverse_lazy('quizPanelQuizDetails', kwargs={'id': quiz.id}))
 
 
 class LeaderBoardView(LoginRequiredMixin, View):
     def get(self, request, id):
         quiz = get_object_or_404(Quiz, pk=id)
         ranking = QuizScoreBoard.objects.all().filter(quiz=quiz).order_by('-score')
-        print(ranking)
-        return render(request, "quiz/leaderboard.html", {"quiz": quiz, "results": ranking})
-
-
-class DetailsView(View):
-    def get(self, request):
-        pass
+        return render(request, "quiz/leaderboard.html", {"quiz": quiz, "results": ranking, "title": "LeaderBoard"})
 
 
 class ChooseQuizView(LoginRequiredMixin, View):
@@ -225,28 +260,6 @@ class ChooseQuizView(LoginRequiredMixin, View):
         quizzes = Quiz.objects.all().filter(department=department)
         return render(request, template_name="quiz/select-quiz.html",
                       context={"title": "Choose Quiz", "quizzes": quizzes})
-
-
-def getCorrectOption(option1, option2, option3, option4, correct):
-    if correct == 1:
-        return option1
-    elif correct == 2:
-        return option2
-    elif correct == 3:
-        return option3
-    else:
-        return option4
-
-
-def getCorrectNumber(option1, option2, option3, correctOption):
-    if correctOption == option1:
-        return 1
-    elif correctOption == option2:
-        return 2
-    elif correctOption == option3:
-        return 3
-    else:
-        return 4
 
 
 def export_leaderboard_xls(request, id):
@@ -277,3 +290,25 @@ def export_leaderboard_xls(request, id):
     font_style = xlwt.XFStyle()
     wb.save(response)
     return response
+
+
+def getCorrectOption(option1, option2, option3, option4, correct):
+    if correct == 1:
+        return option1
+    elif correct == 2:
+        return option2
+    elif correct == 3:
+        return option3
+    else:
+        return option4
+
+
+def getCorrectNumber(option1, option2, option3, correctOption):
+    if correctOption == option1:
+        return 1
+    elif correctOption == option2:
+        return 2
+    elif correctOption == option3:
+        return 3
+    else:
+        return 4
