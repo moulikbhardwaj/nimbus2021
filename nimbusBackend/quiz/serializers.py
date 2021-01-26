@@ -45,7 +45,6 @@ class AnswerSerializer(ModelSerializer):
 
 
 class QuestionSerializerFull(ModelSerializer):
-    quiz = QuizSerializer()
     option1 = AnswerSerializer()
     option2 = AnswerSerializer()
     option3 = AnswerSerializer()

@@ -1,11 +1,10 @@
-from django.shortcuts import render
-
 from rest_framework.request import Request
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin
 
 from .serializers import *
-from .models import *
+from members.models import CoreTeam, Sponsors
+
 
 # Create your views here.
 

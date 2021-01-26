@@ -170,9 +170,9 @@ class CheckResponses(GenericAPIView):
         """
         Mark Quiz Responses
         """
+        marks = 2
         score = 0
         data = request.data
-        print(data)
         serializer = ResponseSerializer(data=data)
         if serializer.is_valid():
             try:
@@ -189,15 +189,14 @@ class CheckResponses(GenericAPIView):
             for answer in data['responses']:
                 responseSerializer = QuizResponseSerializer(data=answer)
                 if responseSerializer.is_valid():
-                    questionId = answer['questionId']
-                    answerId = answer['answerId']
+                    questionId = int(answer['questionId'])
+                    answerId = int(answer['answerId'])
                     try:
                         question = Question.objects.get(id=questionId)
                     except Question.DoesNotExist:
                         return InvalidQuestionIdResponse
                     if question.correct.id == answerId:
-                        score += 1
-                        score *= score
+                        score += marks
                 else:
                     return Response(responseSerializer.errors)
             scoreForUser = QuizScoreBoard.objects.create(quiz=quiz, user=user, score=score)

@@ -14,7 +14,7 @@ DepartMentNotFoundErrorResponse = Response({"error": "Department not found. Plea
                                            status=HTTP_404_NOT_FOUND)
 InvalidQuizIdResponse = Response({"message": "Invalid QuizId"}, status=HTTP_400_BAD_REQUEST)
 
-QuizNotStartedResponse = Response({"message": "Quiz Not Started Yet."}, status=HTTP_400_BAD_REQUEST)
+QuizNotStartedResponse = Response({"message": "Quiz Not Started Yet."}, status=HTTP_200_OK)
 
 InvalidUserIdResponse = Response({"message": "Invalid UserId."}, status=HTTP_400_BAD_REQUEST)
 
