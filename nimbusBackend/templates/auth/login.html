@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        body {
+            background-color: #3b3b3b;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3E%3Cpolygon fill='%230f0101' points='957 450 539 900 1396 900'/%3E%3Cpolygon fill='%23bfbfbf' points='957 450 872.9 900 1396 900'/%3E%3Cpolygon fill='%23424141' points='-60 900 398 662 816 900'/%3E%3Cpolygon fill='%23373737' points='337 900 398 662 816 900'/%3E%3Cpolygon fill='%23858485' points='1203 546 1552 900 876 900'/%3E%3Cpolygon fill='%235c5c5c' points='1203 546 1552 900 1162 900'/%3E%3Cpolygon fill='%2367676a' points='641 695 886 900 367 900'/%3E%3Cpolygon fill='%235e5e5e' points='587 900 641 695 886 900'/%3E%3Cpolygon fill='%23313437' points='1710 900 1401 632 1096 900'/%3E%3Cpolygon fill='%23525252' points='1710 900 1401 632 1365 900'/%3E%3Cpolygon fill='%233f4344' points='1210 900 971 687 725 900'/%3E%3Cpolygon fill='%23010101' points='943 900 1210 900 971 687'/%3E%3C/svg%3E");
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    {% include 'navbar.html' %}
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    {{ form.media }}
+    {% bootstrap_javascript jquery='full' %}
+    <div style="font-family: monospace; padding: 1rem; z-index: 10; ">
+        <div style="margin: 0 auto; width: 500px; padding: .5rem;  box-shadow: 5px 5px 10px 5px #888888;border-radius: 1rem; background-color: white"
+             class="form">
+            <form method="POST" class="form-group">
+                <div class="modal-header">
+                    <img src="https://i1.wp.com/www.indcareer.com/events/wp-content/uploads/2018/02/NIMBUS.jpg?w=960&ssl=1"
+                         width="90"
+                         height="90">
+                    <h1>Login</h1>
+                </div>
+                {% if message %}
+                    <div class="alert alert-danger" role="alert"
+                         style="margin-top: 1rem; margin-right: 1rem; margin-left: 1rem">
+                        {{ message }}
+                    </div>
+                {% endif %}
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {% if next %}
+                        {% if user.is_authenticated %}
+                            <p>Your account doesn't have access to this page. To proceed,
+                                please login with an account that has access.</p>
+                        {% else %}
+                            <p>Please login to see this page.</p>
+                        {% endif %}
+                    {% endif %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="modal-footer">
+                    {% buttons %}
+                        <button type="reset" class="btn btn-danger">Reset</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    {% endbuttons %}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

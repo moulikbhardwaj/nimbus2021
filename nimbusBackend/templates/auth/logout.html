@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        body {
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3E%3Cpolygon fill='%23c5c4cc' points='957 450 539 900 1396 900'/%3E%3Cpolygon fill='%23262724' points='957 450 872.9 900 1396 900'/%3E%3Cpolygon fill='%23adaab1' points='-60 900 398 662 816 900'/%3E%3Cpolygon fill='%23313733' points='337 900 398 662 816 900'/%3E%3Cpolygon fill='%23b5b0b8' points='1203 546 1552 900 876 900'/%3E%3Cpolygon fill='%233e4846' points='1203 546 1552 900 1162 900'/%3E%3Cpolygon fill='%239d979e' points='641 695 886 900 367 900'/%3E%3Cpolygon fill='%23515e61' points='587 900 641 695 886 900'/%3E%3Cpolygon fill='%23ada5ab' points='1710 900 1401 632 1096 900'/%3E%3Cpolygon fill='%2359686f' points='1710 900 1401 632 1365 900'/%3E%3Cpolygon fill='%23a69ca2' points='1210 900 971 687 725 900'/%3E%3Cpolygon fill='%236f7582' points='943 900 1210 900 971 687'/%3E%3C/svg%3E");
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    {% include 'navbar.html' %}
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    {{ form.media }}
+    {% bootstrap_javascript jquery='full' %}
+    <div style="font-family: monospace; padding: 1rem; z-index: 10; ">
+        <div style="margin: 0 auto; width: 500px; padding: .5rem;  box-shadow: 5px 5px 10px 5px #888888;border-radius: 1rem; background-color: white"
+             class="form">
+            <form method="POST" class="form-group">
+                <div class="modal-header">
+                    <img src="https://i1.wp.com/www.indcareer.com/events/wp-content/uploads/2018/02/NIMBUS.jpg?w=960&ssl=1"
+                         width="90"
+                         height="90">
+                    <h1>Logout</h1>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <h3>Are you sure you want to logout?</h3>
+                </div>
+                <div class="modal-footer">
+                    {% buttons %}
+                        <button type="submit" class="btn btn-primary">Logout</button>
+                    {% endbuttons %}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
