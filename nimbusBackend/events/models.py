@@ -10,7 +10,7 @@ from departments.models import Department
 class Event(Model):
     name = CharField("name", max_length=255, null=False)
     abstract = FileField("abstract",upload_to="events/abstract/", blank=True, null=True)
-    info = CharField("info", max_length=512, blank=True, null=True)
+    info = CharField("info", max_length=2048, blank=True, null=True)
     venue = CharField("venue", max_length=64, blank=True, null=True)
     start = DateTimeField("start", null=False)
     end = DateTimeField("end", blank=True, null=True)
