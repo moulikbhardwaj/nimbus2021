@@ -25,7 +25,8 @@ class LoginView(View):
         except Department.DoesNotExist:
             return render(request, template_name="auth/login.html",
                           context={"form": LoginForm(), "title": "Login", "message": "Invalid Department Name."})
-        if department.user.check_password(data['password']):
+          
+        if department.user.check_password(data['password']) :
             login(request, department.user)
             return HttpResponseRedirect(reverse_lazy("quizPanelHome"))
         else:
@@ -79,7 +80,6 @@ class CreateQuestionView(LoginRequiredMixin, View):
                 correct=getCorrectOption(option1, option2, option3, option4, int(data['correct_option']))
             )
             question.save()
-            print("Question Added")
             return HttpResponseRedirect(reverse_lazy("quizPanelQuizDetails", kwargs={"id": id}))
         else:
             return render(request, template_name="quiz/create-question.html",
@@ -124,7 +124,6 @@ class UpdateQuestionView(LoginRequiredMixin, View):
             question.correct = getCorrectOption(option1, option2, option3, option4, int(data["correct_option"]))
             question.text = data["question_statement"]
             question.save()
-            print("Question Added")
             return HttpResponseRedirect(reverse_lazy("quizPanelQuizDetails", kwargs={"id": question.quiz.id}))
         else:
             return render(request, template_name="quiz/update-question.html",
@@ -157,8 +156,6 @@ class CreateQuizView(LoginRequiredMixin, View):
         form = QuizForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            print(data)
-            print(Department.objects.get(user=request.user))
             quiz = Quiz.objects.create(
                 id=uuid1(),
                 name=data["name"],
@@ -241,7 +238,6 @@ class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
                     )
                     q.save()
             except Exception as e:
-                print(e)
                 pass
 
         return HttpResponseRedirect(reverse_lazy('quizPanelQuizDetails', kwargs={'id': quiz.id}))
