@@ -25,8 +25,8 @@ class LoginView(View):
         except Department.DoesNotExist:
             return render(request, template_name="auth/login.html",
                           context={"form": LoginForm(), "title": "Login", "message": "Invalid Department Name."})
-          
-        if department.user.check_password(data['password']) :
+
+        if department.user.check_password(data['password']):
             login(request, department.user)
             return HttpResponseRedirect(reverse_lazy("quizPanelHome"))
         else:
@@ -51,6 +51,7 @@ class CreateQuestionView(LoginRequiredMixin, View):
                       context={"form": CreateQuestionForm(), "title": "Create Question"})
 
     def post(self, request, id):
+        quiz = get_object_or_404(Quiz, pk=id)
         form = CreateQuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
@@ -80,6 +81,9 @@ class CreateQuestionView(LoginRequiredMixin, View):
                 correct=getCorrectOption(option1, option2, option3, option4, int(data['correct_option']))
             )
             question.save()
+            quiz.count = quiz.count + 1
+            quiz.save()
+
             return HttpResponseRedirect(reverse_lazy("quizPanelQuizDetails", kwargs={"id": id}))
         else:
             return render(request, template_name="quiz/create-question.html",
@@ -187,7 +191,7 @@ class UpdateQuizView(LoginRequiredMixin, View):
             quiz.startTime = data['startTime']
             quiz.endTime = data['endTime']
             quiz.name = data['name']
-            quiz.count = data['count']
+            quiz.count = 0
             quiz.sendCount = data['sendCount']
             quiz.save()
             return HttpResponseRedirect(reverse_lazy('quizPanelQuizDetails', kwargs={"id": id}))
@@ -237,6 +241,8 @@ class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
                                                  int(question['Correct Option(1-4)']))
                     )
                     q.save()
+                    quiz.count = quiz.count + 1
+                    quiz.save()
             except Exception as e:
                 pass
 
@@ -286,6 +292,21 @@ def export_leaderboard_xls(request, id):
     font_style = xlwt.XFStyle()
     wb.save(response)
     return response
+
+
+class DeleteQuizQuestionView(LoginRequiredMixin, View):
+    def get(self, request, id):
+        question = get_object_or_404(Question, pk=id)
+        return render(request, "quiz/delete_question.html", {"title": "Delete Question", "question": question})
+
+    def post(self, request, id):
+        question = get_object_or_404(Question, pk=id)
+        quizId = question.quiz.id
+        quiz = get_object_or_404(Quiz, pk=quizId)
+        quiz.count = quiz.count - 1
+        quiz.save()
+        question.delete()
+        return HttpResponseRedirect(reverse_lazy("quizPanelQuizDetails", kwargs={"id": quizId}))
 
 
 def getCorrectOption(option1, option2, option3, option4, correct):

@@ -239,7 +239,9 @@
                     <a href="{% url 'quizPanelUpdateQuestion' question.id %}">
                         <button class="btn btn-dark">Edit</button>
                     </a>
-                    <button class="btn btn-dark">Delete</button>
+                    <a href="{% url 'quizPanelDeleteQuestion' question.id %}">
+                        <button class="btn btn-dark">Delete</button>
+                    </a>
                 </div>
             </div>
         {% empty %}

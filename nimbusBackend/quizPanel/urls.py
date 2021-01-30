@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import LoginView, CreateQuestionView, CreateQuizView, LogoutView, HomeView, QuizView, UpdateQuestionView, \
-    UpdateQuizView, ChooseQuizView, LeaderBoardView, export_leaderboard_xls, UploadQuestionUsingExcelSheetView
+    UpdateQuizView, ChooseQuizView, LeaderBoardView, export_leaderboard_xls, UploadQuestionUsingExcelSheetView, DeleteQuizQuestionView
 
 urlpatterns = [
     path('', HomeView.as_view(), name="quizPanelHome"),
@@ -17,5 +17,6 @@ urlpatterns = [
     path('quizLeaderBoard/GenerateExcel/<str:id>', export_leaderboard_xls, name="quizPanelLeaderBoardGenerateExcel"),
     path('uploadQuestion/<str:id>/', UploadQuestionUsingExcelSheetView.as_view(),
          name="quizPanelQuestionsUsingExcelSheet"),
+    path('deleteQuestion/<str:id>', DeleteQuizQuestionView.as_view(), name="quizPanelDeleteQuestion")
 
 ]
