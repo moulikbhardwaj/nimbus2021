@@ -11,4 +11,4 @@ class UserSerializer(ModelSerializer):
 class UserSerializerForScoreBoard(ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'firstName', 'lastName', 'phone']
+        fields = ['username', 'profileImage']
