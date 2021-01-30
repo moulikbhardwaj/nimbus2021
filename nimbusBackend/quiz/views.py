@@ -215,7 +215,6 @@ class CheckResponses(GenericAPIView):
 
 class CheckQuizPlayedOrNot(GenericAPIView):
     serializer_class = QuizPlayedOrNotSerializer
-
     def post(self, request):
         serializer = QuizPlayedOrNotSerializer(data=request.data)
         if serializer.is_valid():
