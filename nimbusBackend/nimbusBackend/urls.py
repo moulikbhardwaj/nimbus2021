@@ -46,7 +46,8 @@ urlpatterns = [
     path('events/', include('events.urls')),
     path('members/', include('members.urls')),
     path('admin/', admin.site.urls),
-    path('quizPanel/', include('quizPanel.urls'))
+    path('quizPanel/', include('quizPanel.urls')),
+    path('campusAmbassador/', include('campusAmbassador.urls')),
 ]
 
 if DEBUG==True:
