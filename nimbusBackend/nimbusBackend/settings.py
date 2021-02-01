@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'events',
     'members',
     'omegleClone',
+    'campusAmbassador',
 
     # Documentation
     'drf_yasg',
