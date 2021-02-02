@@ -13,6 +13,15 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import datetime
 import os
+import environ
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, True)
+)
+
+# reading .env file
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '7#&u8y^f*8zygim2qj!=f_^llvc83n4@2=%%l=c&!+)-2@$ih0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ["13.71.16.202", "*"]
 
@@ -105,8 +114,12 @@ WSGI_APPLICATION = 'nimbusBackend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':  env('DB_NAME'),
+        'USER':env('DB_USER'),
+        'PASSWORD':env('DB_PASS'),
+        'HOST':'localhost',
+        'PORT': '3306',
     }
 }
 

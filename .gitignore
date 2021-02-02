@@ -6,6 +6,7 @@ nimbusBackend/db.sqlite3
 nimbusBackend/media/
 nimbusBackend/static/
 venv/
+env/
 .env
 logs
 uwsgi.ini
