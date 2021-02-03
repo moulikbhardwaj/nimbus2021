@@ -10,8 +10,8 @@ from django.db.models.fields.related import OneToOneField
 class Department(Model):
     name = CharField("name", primary_key=True, max_length=255, unique=True, null=False)
     user = OneToOneField(User, related_name='department', on_delete=CASCADE)
-    image = ImageField('image', upload_to="department/images")
-    password = CharField('password', max_length=128, null=False, blank=False,
+    image = ImageField('image', upload_to="department/images", null=True,blank=True)
+    password = CharField('password', max_length=128, null=True, blank=True,
                          help_text='Leave empty if no change needed')
 
     def __str__(self) -> str:
