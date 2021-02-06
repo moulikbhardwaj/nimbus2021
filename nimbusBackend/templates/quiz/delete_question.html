@@ -32,8 +32,8 @@
                 </div>
                 <div class="modal-footer">
                     {% buttons %}
-                        <a href="{% url 'quizPanelHome' %}">
-                            <button class="btn btn-dark">Go to Home</button>
+                        <a href="{% url 'quizPanelQuizDetails' question.quiz.id %}">
+                            <button class="btn btn-dark" type="button">Go Back</button>
                         </a>
                         <button type="submit" class="btn btn-primary">Confirm</button>
                     {% endbuttons %}
