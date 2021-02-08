@@ -28,7 +28,7 @@ class DateInput(forms.DateTimeInput):
 class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
-        fields = ["name", "startTime", "endTime", "count", "sendCount"]
+        fields = ["name", "startTime", "endTime", "sendCount"]
         widgets = {
             'startTime': DateTimePickerInput(),
             'endTime': DateTimePickerInput()

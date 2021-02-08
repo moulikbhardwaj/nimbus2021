@@ -11,7 +11,6 @@ from utils.helper_response import InternalServerErrorResponse, InvalidQuizIdResp
 from quiz.serializers import QuizSerializer, ScoreBoardSerializer, QuizScoreBoardSerializer, QuizPlayedOrNotSerializer
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
-
 from users.models import User
 
 
@@ -101,8 +100,11 @@ class QuestionView(GenericAPIView, CreateModelMixin):
             quiz = Quiz.objects.get(id=pk)
         except Quiz.DoesNotExist:
             return InvalidQuizIdResponse
+
         if quiz.startTime <= timezone.now() <= quiz.endTime:
-            return Response(QuestionSerializerFull(Question.objects.all().filter(quiz_id=quiz), many=True).data)
+            return Response(
+                QuestionSerializerFull(Question.objects.all().filter(quiz_id=quiz).order_by('?')[:quiz.sendCount],
+                                       many=True).data)
         else:
             return QuizNotStartedResponse
 
@@ -143,7 +145,8 @@ class QuestionView(GenericAPIView, CreateModelMixin):
                 correct=getCorrectOption(option1, option2, option3, option4, data['correct'])
             )
             question.save()
-
+            quiz.count = quiz.count + 1
+            quiz.save()
             return Response(QuestionSerializerFull(question, many=False).data)
         else:
             return Response(questionSerializer.errors, HTTP_400_BAD_REQUEST)
@@ -215,6 +218,7 @@ class CheckResponses(GenericAPIView):
 
 class CheckQuizPlayedOrNot(GenericAPIView):
     serializer_class = QuizPlayedOrNotSerializer
+
     def post(self, request):
         serializer = QuizPlayedOrNotSerializer(data=request.data)
         if serializer.is_valid():
