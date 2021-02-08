@@ -51,6 +51,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('quizPanel/', include('quizPanel.urls')),
     path('campusAmbassador/', include('campusAmbassador.urls')),
+    path('schedule/', include('schedule.urls')),
 ]
 
 
