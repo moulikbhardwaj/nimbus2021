@@ -12,7 +12,7 @@ class Event(Model):
     abstract = FileField("abstract",upload_to="events/abstract/", blank=True, null=True)
     info = CharField("info", max_length=2048, blank=True, null=True)
     venue = CharField("venue", max_length=64, blank=True, null=True)
-    start = DateTimeField("start", null=False)
+    start = DateTimeField("start", null=True, blank=True)
     end = DateTimeField("end", blank=True, null=True)
     image = ImageField("image", upload_to="events/images", blank=True)
     regURL = URLField("regURL", blank=True, null=True)
