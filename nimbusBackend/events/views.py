@@ -13,6 +13,7 @@ from events.models import Event
 from events.serializers import EventSerializer
 from events.permissions import IsOwnerOrReadonly
 
+from datetime import datetime
 
 # Create your views here.
 
@@ -36,7 +37,11 @@ class EventsView(GenericAPIView, ListModelMixin, CreateModelMixin):
             queryset = queryset.filter(department__name=self.request.query_params.get("department"))
         
         if self.request.query_params.get('date', None) != None:
-            queryset = queryset.filter(start__gte=self.request.query_params.get("date"))
+            datestr = "2020-12-30T23:20:00+05:30"
+            format = "%Y-%m-%dT%H:%M:%S%z"
+            datestr = ''.join(datestr.rsplit(":",1))
+            date = datetime.strptime(datestr, format)
+            queryset = queryset.filter(start__gte=date)
             
         return queryset
 
