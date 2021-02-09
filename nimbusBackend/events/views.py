@@ -37,12 +37,14 @@ class EventsView(GenericAPIView, ListModelMixin, CreateModelMixin):
             queryset = queryset.filter(department__name=self.request.query_params.get("department"))
         
         if self.request.query_params.get('date', None) != None:
-            datestr = "2020-12-30T23:20:00+05:30"
+            datestr = self.request.query_params.get('date', None)
             format = "%Y-%m-%dT%H:%M:%S%z"
             datestr = ''.join(datestr.rsplit(":",1))
-            date = datetime.strptime(datestr, format)
-            queryset = queryset.filter(start__gte=date)
-            
+            try:
+                date = datetime.strptime(datestr, format)
+                queryset = queryset.filter(start__gte=date)
+            except:
+                pass
         return queryset
 
     authentication_classes = [JWTAuthentication]
