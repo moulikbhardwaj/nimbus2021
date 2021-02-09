@@ -20,7 +20,7 @@ class EventsView(GenericAPIView, ListModelMixin, CreateModelMixin):
     serializer_class = EventSerializer
 
     def get_queryset(self):
-        queryset = Event.objects.all()
+        queryset = Event.objects.all().order_by('start')
         if self.request.query_params.get('type') == 'departmental':
             queryset = queryset.filter(Type=0)
         elif self.request.query_params.get('type') == 'institutional':
@@ -34,6 +34,10 @@ class EventsView(GenericAPIView, ListModelMixin, CreateModelMixin):
 
         if self.request.query_params.get('department', None) != None:
             queryset = queryset.filter(department__name=self.request.query_params.get("department"))
+        
+        if self.request.query_params.get('date', None) != None:
+            queryset = queryset.filter(start__gte=self.request.query_params.get("date"))
+            
         return queryset
 
     authentication_classes = [JWTAuthentication]
@@ -52,6 +56,7 @@ class EventsView(GenericAPIView, ListModelMixin, CreateModelMixin):
 class EventView(GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin):
     serializer_class = EventSerializer
     queryset = Event.objects.all()
+
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadonly]
