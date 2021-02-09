@@ -17,7 +17,6 @@ class Quiz(Model):
     """
     id = CharField(primary_key=True, default=uuid4(), max_length=256)
     name = CharField('name', max_length=255, null=False)
-
     count = IntegerField('count', default=0)
     sendCount = IntegerField('sendCount', default=1)
 
