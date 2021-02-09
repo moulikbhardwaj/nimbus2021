@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from schedule.models import Schedule
+from schedule.models import *
 
 # Register your models here.
 
