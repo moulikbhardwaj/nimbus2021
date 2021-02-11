@@ -25,7 +25,7 @@ class User(Model):
     omegleReports = IntegerField('omegleReports', default=0)
     omegleAllowed = BooleanField('omegleAllowed', default=True)
 
-    profileImage = URLField('profileImage', max_length=255)
+    profileImage = URLField('profileImage', max_length=255, null=True, blank=True)
     campusAmbassador = BooleanField('iscamplusAmbassador', default=False, blank=True)
     collegeName = CharField('collegeName', max_length=256)
 
