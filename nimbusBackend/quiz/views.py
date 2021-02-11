@@ -101,9 +101,6 @@ class QuestionView(GenericAPIView, CreateModelMixin):
         except Quiz.DoesNotExist:
             return InvalidQuizIdResponse
 
-        print(timezone.now())
-        print(quiz.endTime)
-        print(quiz.startTime)
         if quiz.startTime <= timezone.now() <= quiz.endTime:
             return Response(
                 QuestionSerializerFull(Question.objects.all().filter(quiz_id=quiz).order_by('?')[:quiz.sendCount],
