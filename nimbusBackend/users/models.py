@@ -26,8 +26,7 @@ class User(Model):
     omegleAllowed = BooleanField('omegleAllowed', default=True)
 
     profileImage = URLField('profileImage', max_length=255)
-    campusAmbassador = BooleanField('iscamplusAmbassador', default=False)
-    rollNumber = CharField('rollNumber', max_length=255)
+    campusAmbassador = BooleanField('iscamplusAmbassador', default=False, blank=True)
     collegeName = CharField('collegeName', max_length=256)
 
     def __str__(self) -> str:
