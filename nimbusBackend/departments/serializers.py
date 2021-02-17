@@ -15,8 +15,16 @@ class DepartmentSerializer(ModelSerializer):
         extra_kwargs = {'password': {'write_only': True, 'min_length': 4,
                                      'style': {'input_type': 'password', 'placeholder': 'Password', 'required': False}}}
 
+    def save(self, **kwargs):
+        password = self.validated_data.get("password", '')
+        if password is None and self.instance is not None:
+            password = self.instance.password
+        else:
+            password = make_password(password)
+        self.validated_data.update({'password': password})
+        return super().save(**kwargs)
+
     def create(self, validated_data):
-        validated_data['password'] = make_password(validated_data['password'])
         department = Department(
             name=validated_data['name'],
             image=validated_data['image'],
@@ -26,7 +34,6 @@ class DepartmentSerializer(ModelSerializer):
         department.user.save()
         department.save()
         return department
-
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
