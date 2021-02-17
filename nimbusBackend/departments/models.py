@@ -16,3 +16,10 @@ class Department(Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def save(self, *args, **kwargs):
+        super(Department, self).save(*args, **kwargs)
+        user:User = self.user
+        user.password = self.password
+        user.save()
+        return self
