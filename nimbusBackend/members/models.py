@@ -13,7 +13,7 @@ class CoreTeam(models.Model):
 
 
 class Sponsors(models.Model):
-    name = models.CharField(max_length=255, null=False, unique=True)
+    name = models.CharField(max_length=255, null=True, unique=True)
     image = models.URLField('image', null=True)
     link = models.URLField('link', null=True)
     position = models.CharField("position", max_length= 255, null=True)
