@@ -14,9 +14,10 @@ class CoreTeam(models.Model):
 
 class Sponsors(models.Model):
     name = models.CharField(max_length=255, null=False, unique=True)
-    image = models.URLField('image')
-    link = models.URLField('link')
-    position = models.CharField(max_length= 255)
+    image = models.URLField('image', null=True)
+    link = models.URLField('link', null=True)
+    position = models.CharField("position", max_length= 255, null=True)
+    priority = models.IntegerField("priority", default=1)
 
     def __str__(self):
         return self.name
