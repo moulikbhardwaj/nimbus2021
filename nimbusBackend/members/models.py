@@ -20,4 +20,7 @@ class Sponsors(models.Model):
     priority = models.IntegerField("priority", default=1)
 
     def __str__(self):
-        return self.name
+        print(self.name)
+        if self.name is None:
+            return f"sponsor: NoName"
+        return f"sponsor: {self.name}"
