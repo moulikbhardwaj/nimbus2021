@@ -20,13 +20,14 @@ class CoreteamSerializer(serializers.ModelSerializer):
 class SponsorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sponsors
-        fields = ['name', 'image', 'position']
+        fields = ['name', 'link', 'image', 'position']
 
     def create(self, validated_data):
         sponsor = Sponsors(
             name=validated_data['name'],
             position=validated_data['position'],
-            image=validated_data['image']
+            image=validated_data['image'],
+            link=validated_data['link']
         )
         sponsor.save()
         return sponsor

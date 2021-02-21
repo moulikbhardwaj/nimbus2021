@@ -15,6 +15,7 @@ class CoreTeam(models.Model):
 class Sponsors(models.Model):
     name = models.CharField(max_length=255, null=False, unique=True)
     image = models.URLField('image')
+    link = models.URLField('link')
     position = models.CharField(max_length= 255)
 
     def __str__(self):
