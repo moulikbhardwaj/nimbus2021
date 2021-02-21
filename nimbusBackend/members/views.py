@@ -18,7 +18,7 @@ class CoreTeamView(GenericAPIView, ListModelMixin):
 
 class SponsorView(GenericAPIView, ListModelMixin):
     serializer_class = SponsorSerializer
-    queryset = Sponsors.objects.all()
+    queryset = Sponsors.objects.all().order_by('priority')
 
     def get(self, request: Request):
         return self.list(request)
