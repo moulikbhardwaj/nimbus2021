@@ -10,4 +10,3 @@ class GalleryPost(Model):
     department = ForeignKey(Department, on_delete=CASCADE)
     image = ImageField("image", upload_to="gallery/images")
     upload_time = DateTimeField("upload_time", auto_now=True, editable=False)
-    year = IntegerField("year", default=None, blank=True, null=True)
