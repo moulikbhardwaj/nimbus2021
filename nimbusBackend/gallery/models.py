@@ -1,6 +1,7 @@
 from django.db.models import ForeignKey, CASCADE, Model
 from django.db.models.fields import DateTimeField
 from django.db.models import ImageField
+from datetime import datetime
 
 from departments.models import Department
 
@@ -9,4 +10,4 @@ from departments.models import Department
 class GalleryPost(Model):
     department = ForeignKey(Department, on_delete=CASCADE)
     image = ImageField("image", upload_to="gallery/images")
-    upload_time = DateTimeField("upload_time", auto_now=True, editable=False)
+    upload_time = DateTimeField("upload_time", default=datetime.now)
