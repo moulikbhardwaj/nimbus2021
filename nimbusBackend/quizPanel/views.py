@@ -165,7 +165,6 @@ class CreateQuizView(LoginRequiredMixin, View):
                 name=data["name"],
                 startTime=data["startTime"],
                 endTime=data["endTime"],
-                count=data["count"],
                 sendCount=data["sendCount"],
                 department=Department.objects.get(user=request.user)
             )
