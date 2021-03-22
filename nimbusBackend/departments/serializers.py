@@ -17,7 +17,7 @@ class DepartmentSerializer(ModelSerializer):
 
     def save(self, **kwargs):
         password = self.validated_data.get("password", '')
-        if password is None and self.instance is not None:
+        if password == '' and self.instance is not None:
             password = self.instance.password
         else:
             password = make_password(password)

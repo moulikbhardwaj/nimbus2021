@@ -44,6 +44,10 @@ class GalleryListView(ListCreateAPIView):
             queryset = queryset.filter(department="web_team")
         elif dept_id == '12':
             queryset = queryset.filter(department="app_team")
+
+        year = self.request.query_params.get('year', None)
+        if year is not None:
+            queryset = queryset.filter(upload_time__year=year)
         return queryset   
 
     def get(self, request, *args, **kwargs):
