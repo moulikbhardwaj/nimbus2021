@@ -1,7 +1,6 @@
-from abc import ABC
 
 from quiz.models import Quiz, Question, ScoreBoard, QuizScoreBoard, Answer
-from rest_framework.serializers import ModelSerializer, CharField, IntegerField, Serializer, ListField, DictField
+from rest_framework.serializers import ModelSerializer, CharField, IntegerField, Serializer, ListField, DictField, URLField
 from rest_framework.validators import UniqueTogetherValidator
 
 from users.serializers import UserSerializerForScoreBoard
@@ -21,6 +20,7 @@ class QuizSerializer(ModelSerializer):
 
 class QuestionSerializer(ModelSerializer):
     text = CharField(help_text="Question Text", max_length=256, min_length=5)
+    image = URLField(help_text="Url for image (if exists)")
     option1 = CharField(help_text="Option 1", max_length=256, min_length=1)
     option2 = CharField(help_text="Option 2", max_length=256, min_length=1)
     option3 = CharField(help_text="Option 3", max_length=256, min_length=1)

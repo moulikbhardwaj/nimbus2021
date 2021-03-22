@@ -2,8 +2,10 @@ from uuid import uuid4
 
 import django
 from django.db.models import Model, CASCADE
-from django.db.models.fields import CharField, IntegerField, DateTimeField, PositiveIntegerField
+from django.db.models.fields import CharField, IntegerField, DateTimeField, PositiveIntegerField, URLField
 from django.db.models.fields.related import ForeignKey
+
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from departments.models import Department
 
@@ -32,7 +34,9 @@ class Quiz(Model):
 
 
 class Answer(Model):
-    text = CharField('text', max_length=255)
+    text = CharField('text', max_length=255, blank=True, null=True)
+    image = URLField('image', blank=True, null=True)
+
 
 
 class Question(Model):
@@ -40,6 +44,11 @@ class Question(Model):
     Quiz Question Details
     """
     text = CharField('text', max_length=512)
+    image = URLField("image", blank=True, null=True)
+
+    optionCount = IntegerField("optionCount", default=4,
+                    validators= [MaxValueValidator(4), MinValueValidator(2)]
+    )
 
     option1 = ForeignKey(Answer, related_name='option1', on_delete=CASCADE)
     option2 = ForeignKey(Answer, related_name='option2', on_delete=CASCADE)
@@ -49,6 +58,7 @@ class Question(Model):
     correct = ForeignKey(Answer, on_delete=CASCADE)
     quiz = ForeignKey(Quiz, on_delete=CASCADE)
 
+    timeLimit = IntegerField("timeLimit", default=15)
 
 class ScoreBoard(Model):
     """
