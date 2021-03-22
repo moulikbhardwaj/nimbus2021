@@ -4,8 +4,9 @@ from rest_framework.response import Response
 from rest_framework import status
 import uuid
 import datetime
-from .models import VCQueue, VCLog
+from .models import VCQueue, VCLog, Report
 from users.models import User
+from .serializers import ReportSerializer
 from .RtcTokenBuilder import RtcTokenBuilder, Role_Publisher
 
 
@@ -86,6 +87,19 @@ def reportView(request, uid):
         queryset[0].save()
         return Response({"Message": "Reported"})
     return Response({"Message:" "Invalid uid"}, status.HTTP_400_BAD_REQUEST)
+
+@api_view(http_method_names=['POST'])
+def reportNewView(request):
+    data = request.POST
+    serializer = ReportSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        user = User.objects.filter(firebase=request.POST['reported'])
+        if len(user) > 0:
+            user[0].omegleReports += 1
+            user[0].save()
+        return Response({"Message": "Reported"})
+    return Response({"Message:" "Invalid data"}, status.HTTP_400_BAD_REQUEST)
 
 def getChannel():
     return uuid.uuid4().hex
