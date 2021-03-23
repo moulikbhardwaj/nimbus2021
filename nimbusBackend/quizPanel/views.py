@@ -126,7 +126,6 @@ class UpdateQuestionView(LoginRequiredMixin, View):
         form = CreateQuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            print(data)
             question = Question.objects.get(id=id)
             option1 = Answer.objects.get(id=question.option1.id)
             option2 = Answer.objects.get(id=question.option2.id)
