@@ -88,13 +88,13 @@ def reportView(request, uid):
         return Response({"Message": "Reported"})
     return Response({"Message:" "Invalid uid"}, status.HTTP_400_BAD_REQUEST)
 
-@api_view(http_method_names=['POST'])
+@api_view(['POST'])
 def reportNewView(request):
-    data = request.POST
+    data = request.data
     serializer = ReportSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
-        user = User.objects.filter(firebase=request.POST['reported'])
+        user = User.objects.filter(firebase=data['reported'])
         if len(user) > 0:
             user[0].omegleReports += 1
             user[0].save()
