@@ -238,45 +238,49 @@ class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
         data = pd.read_excel(file)
         questions = data.to_dict('records')
         for question in questions:
+            for key in question:
+                if str(question[key])=='nan':
+                    question[key] = ''
+                    if key=='optionCount':
+                        question[key] = 4
             try:
-                if len(Question.objects.all().filter(quiz=quiz, text=question['Question Text'])) == 0:
-                    option1 = Answer(
-                        text=str(question['Option 1']),
-                        image=str(question['Image 1'])
-                    )
-                    option2 = Answer(
-                        text=str(question['Option 2']),
-                        image=str(question['Image 2'])
-                    )
-                    option3 = Answer(
-                        text=str(question['Option 3']),
-                        image=str(question['Image 3'])
-                    )
-                    option4 = Answer(
-                        text=str(question['Option 4']),
-                        image=str(question['Image 4'])
-                    )
-                    option1.save()
-                    option2.save()
-                    option3.save()
-                    option4.save()
+                option1 = Answer(
+                    text=str(question['Option 1']),
+                    image=str(question['Image 1'])
+                )
+                option2 = Answer(
+                    text=str(question['Option 2']),
+                    image=str(question['Image 2'])
+                )
+                option3 = Answer(
+                    text=str(question['Option 3']),
+                    image=str(question['Image 3'])
+                )
+                option4 = Answer(
+                    text=str(question['Option 4']),
+                    image=str(question['Image 4'])
+                )
+                option1.save()
+                option2.save()
+                option3.save()
+                option4.save()
 
-                    q = Question.objects.create(
-                        quiz_id=id,
-                        text=str(question['Question Text']),
-                        image=str(question['Image']),
-                        questionCount=str(questions['Question Count']),
-                        option1=option1,
-                        option2=option2,
-                        option3=option3,
-                        option4=option4,
-                        correct=getCorrectOption(option1, option2, option3, option4,
-                                                 int(question['Correct Option(1-4)'])),
-                        timeLimit = question['Time Limit']
-                    )
-                    q.save()
-                    quiz.count = quiz.count + 1
-                    quiz.save()
+                q = Question.objects.create(
+                    quiz_id=id,
+                    text=str(question['Question Text']),
+                    image=str(question['Image']),
+                    optionCount=int(question['Option Count']),
+                    option1=option1,
+                    option2=option2,
+                    option3=option3,
+                    option4=option4,
+                    correct=getCorrectOption(option1, option2, option3, option4,
+                                                int(question['Correct Option(1-4)'])),
+                    timeLimit = question['Time Limit'],
+                )
+                q.save()
+                quiz.count = quiz.count + 1
+                quiz.save()
             except Exception as e:
                 pass
 
