@@ -56,16 +56,20 @@ class CreateQuestionView(LoginRequiredMixin, View):
         if form.is_valid():
             data = form.cleaned_data
             option1 = Answer.objects.create(
-                text=data['option_1']
+                text=data['option_1'],
+                image=data['image_1']
             )
             option2 = Answer.objects.create(
-                text=data['option_2']
+                text=data['option_2'],
+                image=data['image_2']
             )
             option3 = Answer.objects.create(
-                text=data['option_3']
+                text=data['option_3'],
+                image=data['image_3']
             )
             option4 = Answer.objects.create(
-                text=data['option_4']
+                text=data['option_4'],
+                image=data['image_4']
             )
             option1.save()
             option2.save()
@@ -73,12 +77,15 @@ class CreateQuestionView(LoginRequiredMixin, View):
             option4.save()
             question = Question.objects.create(
                 text=data["question_statement"],
+                image = data["image"],
                 option1=option1,
                 option2=option2,
                 option3=option3,
                 option4=option4,
                 quiz_id=id,
-                correct=getCorrectOption(option1, option2, option3, option4, int(data['correct_option']))
+                correct=getCorrectOption(option1, option2, option3, option4, int(data['correct_option'])),
+                timeLimit=data['timeLimit'],
+                optionCount=data['optionCount'],
             )
             question.save()
             quiz.count = quiz.count + 1
@@ -98,11 +105,18 @@ class UpdateQuestionView(LoginRequiredMixin, View):
             initial={
                 "correct_option": getCorrectNumber(question.option1, question.option2, question.option3,
                                                    question.correct),
+                "image": question.image,
+                "optionCount": question.optionCount,
                 "option_1": question.option1.text,
+                "image_1": question.option1.image,
                 "option_2": question.option2.text,
+                "image_2": question.option2.image,
                 "option_3": question.option3.text,
+                "image_3": question.option3.image,
                 "option_4": question.option4.text,
-                "question_statement": question.text
+                "image_4": question.option4.image,
+                "question_statement": question.text,
+                "timeLimit": question.timeLimit,
             }
         )
         return render(request, template_name="quiz/update-question.html",
@@ -112,20 +126,34 @@ class UpdateQuestionView(LoginRequiredMixin, View):
         form = CreateQuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
+            print(data)
             question = Question.objects.get(id=id)
             option1 = Answer.objects.get(id=question.option1.id)
             option2 = Answer.objects.get(id=question.option2.id)
             option3 = Answer.objects.get(id=question.option3.id)
             option4 = Answer.objects.get(id=question.option4.id)
+            
             option1.text = data["option_1"]
+            option1.image = data["image_1"]
+
             option2.text = data["option_2"]
+            option2.image = data["image_2"]
+
             option3.text = data["option_3"]
+            option3.image = data["image_3"]
+
             option4.text = data["option_4"]
+            option4.image = data["image_4"]
+
+
             option1.save()
             option2.save()
             option3.save()
             option4.save()
             question.correct = getCorrectOption(option1, option2, option3, option4, int(data["correct_option"]))
+            question.timeLimit = data["timeLimit"]
+            question.optionCount = data["optionCount"]
+            question.image = data["image"];
             question.text = data["question_statement"]
             question.save()
             return HttpResponseRedirect(reverse_lazy("quizPanelQuizDetails", kwargs={"id": question.quiz.id}))
@@ -213,16 +241,20 @@ class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
             try:
                 if len(Question.objects.all().filter(quiz=quiz, text=question['Question Text'])) == 0:
                     option1 = Answer(
-                        text=str(question['Option 1'])
+                        text=str(question['Option 1']),
+                        image=str(question['Image 1'])
                     )
                     option2 = Answer(
-                        text=str(question['Option 2'])
+                        text=str(question['Option 2']),
+                        image=str(question['Image 2'])
                     )
                     option3 = Answer(
-                        text=str(question['Option 3'])
+                        text=str(question['Option 3']),
+                        image=str(question['Image 3'])
                     )
                     option4 = Answer(
-                        text=str(question['Option 4'])
+                        text=str(question['Option 4']),
+                        image=str(question['Image 4'])
                     )
                     option1.save()
                     option2.save()
@@ -232,12 +264,15 @@ class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
                     q = Question.objects.create(
                         quiz_id=id,
                         text=str(question['Question Text']),
+                        image=str(question['Image']),
+                        questionCount=str(questions['Question Count']),
                         option1=option1,
                         option2=option2,
                         option3=option3,
                         option4=option4,
                         correct=getCorrectOption(option1, option2, option3, option4,
-                                                 int(question['Correct Option(1-4)']))
+                                                 int(question['Correct Option(1-4)'])),
+                        timeLimit = question['Time Limit']
                     )
                     q.save()
                     quiz.count = quiz.count + 1
