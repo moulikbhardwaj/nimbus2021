@@ -86,6 +86,8 @@ class CreateQuestionView(LoginRequiredMixin, View):
                 correct=getCorrectOption(option1, option2, option3, option4, int(data['correct_option'])),
                 timeLimit=data['timeLimit'],
                 optionCount=data['optionCount'],
+                marks=data['marks'],
+                negativeMarks=data['negativeMarks'],
             )
             question.save()
             quiz.count = quiz.count + 1
@@ -117,6 +119,8 @@ class UpdateQuestionView(LoginRequiredMixin, View):
                 "image_4": question.option4.image,
                 "question_statement": question.text,
                 "timeLimit": question.timeLimit,
+                'marks': question.marks,
+                'negativeMarks': question.negativeMarks
             }
         )
         return render(request, template_name="quiz/update-question.html",
@@ -153,8 +157,10 @@ class UpdateQuestionView(LoginRequiredMixin, View):
             question.correct = getCorrectOption(option1, option2, option3, option4, int(data["correct_option"]))
             question.timeLimit = data["timeLimit"]
             question.optionCount = data["optionCount"]
-            question.image = data["image"];
+            question.image = data["image"]
             question.text = data["question_statement"]
+            question.marks = data["marks"]
+            question.negativeMarks = data["negativeMarks"]
             question.save()
             return HttpResponseRedirect(reverse_lazy("quizPanelQuizDetails", kwargs={"id": question.quiz.id}))
         else:
@@ -277,6 +283,8 @@ class UploadQuestionUsingExcelSheetView(LoginRequiredMixin, View):
                     correct=getCorrectOption(option1, option2, option3, option4,
                                                 int(question['Correct Option(1-4)'])),
                     timeLimit = question['Time Limit'],
+                    marks = question['Marks'],
+                    negativeMarks = question['Negative Marks']
                 )
                 q.save()
                 quiz.count = quiz.count + 1

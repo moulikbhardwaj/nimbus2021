@@ -59,7 +59,7 @@ class LeaderBoard(GenericAPIView, ListModelMixin):
     """
     model = ScoreBoard
     serializer_class = ScoreBoardSerializer
-    queryset = ScoreBoard.objects.all().order_by('-score')
+    queryset = ScoreBoard.objects.all().order_by('-score', 'timestamp')
 
     def get(self, request: Request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -78,7 +78,7 @@ class QuizLeaderBoard(GenericAPIView, ListModelMixin):
             if len(Quiz.objects.all().filter(id=kwargs["pk"])) == 0:
                 return InvalidQuizIdResponse
             quizScoreBoardSerializer = QuizScoreBoardSerializer(
-                QuizScoreBoard.objects.all().filter(quiz_id=kwargs["pk"]), many=True)
+                QuizScoreBoard.objects.all().filter(quiz_id=kwargs["pk"]).order_by('-score','timestamp'), many=True)
             return Response(quizScoreBoardSerializer.data)
         except:
             return InternalServerErrorResponse
@@ -173,7 +173,7 @@ class CheckResponses(GenericAPIView):
         """
         Mark Quiz Responses
         """
-        marks = 2
+        # marks = 2
         score = 0
         data = request.data
         serializer = ResponseSerializer(data=data)
@@ -199,18 +199,22 @@ class CheckResponses(GenericAPIView):
                     except Question.DoesNotExist:
                         return InvalidQuestionIdResponse
                     if question.correct.id == answerId:
-                        score += marks
+                        score += question.marks
+                        if answer.get('timeTaken', None)!=None:
+                            score += int(question.timeLimit) - int(answer['timeTaken'])
+                    elif answerId==30000:
+                        score += 0
+                    else:
+                        score -= question.negativeMarks
                 else:
                     return Response(responseSerializer.errors)
+            if score<0 :
+                score = 0
             scoreForUser = QuizScoreBoard.objects.create(quiz=quiz, user=user, score=score)
             scoreForUser.save()
-            centralScore = ScoreBoard.objects.filter(user=user)
-            if len(centralScore) == 0:
-                ScoreBoard.objects.create(user=user, score=score).save()
-            else:
-                centralScore = centralScore[0]
-                centralScore.score += centralScore.score
-                centralScore.save()
+            centralScore, created = ScoreBoard.objects.get_or_create(user=user)
+            centralScore.score += score
+            centralScore.save()
             return Response({"score": score})
         else:
             return Response(serializer.errors, HTTP_400_BAD_REQUEST)
