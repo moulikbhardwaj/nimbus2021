@@ -60,12 +60,16 @@ class Question(Model):
 
     timeLimit = IntegerField("timeLimit", default=15)
 
+    marks = PositiveIntegerField("marks", default=5)
+    negativeMarks = PositiveIntegerField("negativeMarks", default=0)
+
 class ScoreBoard(Model):
     """
     Contains User Scores
     """
     user = ForeignKey(User, on_delete=CASCADE)
-    score = PositiveIntegerField(default=0)
+    score = IntegerField(default=0)
+    timestamp = DateTimeField("timestamp",auto_now=True)
 
     def __str__(self):
         return self.user.email
@@ -77,7 +81,8 @@ class QuizScoreBoard(Model):
     """
     user = ForeignKey(User, on_delete=CASCADE)
     quiz = ForeignKey(Quiz, on_delete=CASCADE)
-    score = PositiveIntegerField(default=0)
+    score = IntegerField(default=0)
+    timestamp = DateTimeField("timestamp",auto_now=True)
 
     class Meta:
         unique_together = ("user", "quiz")

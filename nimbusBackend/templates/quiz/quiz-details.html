@@ -190,7 +190,7 @@
         {% for question in questions %}
             <div class="card">
                 <div class="modal-header">
-                    <h1>Question</h1>
+                    <h1>Question {{forloop.counter}}</h1>
                 </div>
                 <div class="modal-body">
                     <div>
@@ -205,6 +205,20 @@
                         <label>Queston Image URL</label>
                         <textarea class="form-control" style="width: 100%;height: 30px"
                                   disabled>{{ question.image }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>Marks</label>
+                        <textarea class="form-control" style="width: 100%;height: 30px" 
+                                  disabled>{{ question.marks }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>Negative Marks</label>
+                        <textarea class="form-control" style="width: 100%;height: 30px"
+                                  disabled>{{ question.negativeMarks }}</textarea>
                     </div>
                 </div>
                 <div class="modal-body">
