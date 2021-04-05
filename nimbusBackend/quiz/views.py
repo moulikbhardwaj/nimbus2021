@@ -17,7 +17,7 @@ from users.models import User
 class QuizzesView(GenericAPIView, ListModelMixin, CreateModelMixin):
     serializer_class = QuizSerializer
 
-    queryset = Quiz.objects.all()
+    queryset = Quiz.objects.filter(endTime__gte = timezone.now())
 
     def get(self, request: Request):
         """
@@ -38,7 +38,7 @@ class QuizView(GenericAPIView, ListModelMixin, UpdateModelMixin):
     def get_queryset(self, pk=None):
         try:
             if pk is None:
-                return Quiz.objects.all()
+                return Quiz.objects.filter(endTime__gte = timezone.now())
             return Quiz.objects.get(pk=pk)
         except Quiz.DoesNotExist:
             return Http404
@@ -55,11 +55,18 @@ class QuizView(GenericAPIView, ListModelMixin, UpdateModelMixin):
 
 class LeaderBoard(GenericAPIView, ListModelMixin):
     """
-    Retrieve OverAll LeaderBoard
+    Retrieve Departmental LeaderBoard
     """
     model = ScoreBoard
     serializer_class = ScoreBoardSerializer
-    queryset = ScoreBoard.objects.all().order_by('-score', 'timestamp')
+
+    def get_queryset(self):
+        department = self.request.query_params.get("department", None)
+        # backward compatibility
+        if department is None:
+            return ScoreBoard.objects.all().order_by('-score', 'timestamp')
+        else:
+            return ScoreBoard.objects.filter(department=department).order_by('-score', 'timestamp')
 
     def get(self, request: Request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -100,10 +107,14 @@ class QuestionView(GenericAPIView, CreateModelMixin):
             quiz = Quiz.objects.get(id=pk)
         except Quiz.DoesNotExist:
             return InvalidQuizIdResponse
-
         if quiz.startTime <= timezone.now() <= quiz.endTime:
+            if request.query_params.get("picture", False) == 'true':
+                questions = Question.objects.filter(quiz_id=quiz)
+            else:
+                questions = Question.objects.filter(quiz_id=quiz, image="", option1__image="", option2__image="",
+                                                     option3__image="", option4__image="")
             return Response(
-                QuestionSerializerFull(Question.objects.all().filter(quiz_id=quiz).order_by('?')[:quiz.sendCount],
+                QuestionSerializerFull(questions.order_by('?')[:quiz.sendCount],
                                        many=True).data)
         else:
             return QuizNotStartedResponse
@@ -212,7 +223,8 @@ class CheckResponses(GenericAPIView):
                 score = 0
             scoreForUser = QuizScoreBoard.objects.create(quiz=quiz, user=user, score=score)
             scoreForUser.save()
-            centralScore, created = ScoreBoard.objects.get_or_create(user=user)
+            department = quiz.department
+            centralScore, created = ScoreBoard.objects.get_or_create(user=user, department=department)
             centralScore.score += score
             centralScore.save()
             return Response({"score": score})

@@ -59,18 +59,16 @@ class Question(Model):
     quiz = ForeignKey(Quiz, on_delete=CASCADE)
 
     timeLimit = IntegerField("timeLimit", default=15)
-<<<<<<< HEAD
-=======
 
     marks = PositiveIntegerField("marks", default=5)
     negativeMarks = PositiveIntegerField("negativeMarks", default=0)
->>>>>>> 010f764b1fbe446c310bcf1a32f7b1b036baa836
 
 class ScoreBoard(Model):
     """
     Contains User Scores
     """
     user = ForeignKey(User, on_delete=CASCADE)
+    department = ForeignKey(Department, on_delete=CASCADE)
     score = IntegerField(default=0)
     timestamp = DateTimeField("timestamp",auto_now=True)
 
