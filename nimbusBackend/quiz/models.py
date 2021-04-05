@@ -68,7 +68,10 @@ class ScoreBoard(Model):
     Contains User Scores
     """
     user = ForeignKey(User, on_delete=CASCADE)
+<<<<<<< HEAD
     department = ForeignKey(Department, on_delete=CASCADE)
+=======
+>>>>>>> 3c9d7f84ced8c046b822ef12cf0fe1a9a7ef9acd
     score = IntegerField(default=0)
     timestamp = DateTimeField("timestamp",auto_now=True)
 
